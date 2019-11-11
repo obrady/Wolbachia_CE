@@ -2,7 +2,8 @@
 
 rm(list = ls())
 
-setwd("/Users/eideobra/Dropbox/Indonesia")
+# setwd("/Users/eideobra/Dropbox/Indonesia")
+setwd("~/Dropbox/LSHTM/Indonesia/")
 
 require(raster)
 require(rgdal)
@@ -55,7 +56,7 @@ round.func <- function(x, YOGCITY = FALSE){
 # compile into one table
 Table1 <- data.frame(YOG_CITY = round.func(YOG_CITY_result[[1]], YOGCITY = TRUE),
                      YOG_SAR = round.func(YOG_SAR_result[[1]]),
-                     JAKARTA = round.func(JAK_result[[1]]),
+                     JAKARTA = round.func(JAK_result[[1]]),  
                      BALI = round.func(BALI_result[[1]]))
 rownames(Table1) <- c("People_millions",
                       "Perc_covered_by_Wol",
@@ -175,37 +176,46 @@ T_avert_poly_s = rbind(T_avert_slow_optimistic, T_avert_slow[20:1, ])
 cbp1 <- c("#E69F00", "#56B4E9", "#009E73",
           "#D55E00", "#999999")
 
+labels.leg <- c("Set up", "Release", "Short term release", "Long term release", "Uncertainty")
+
 
 p1 <- ggplot(T_cost_fast, aes(x = year, y = costs, fill = Phase)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = cbp1) +
+  scale_fill_manual(values = cbp1, labels = labels.leg) +
   scale_y_continuous(limits = c(0, 12)) +
   theme_bw() +
   xlab("Programme year") +
   ylab("Cumulative costs and benefits (millions USD)") + 
-  guides(fill=guide_legend(title="Programme phase")) +
-  geom_line(data = T_avert_fast, mapping = aes(x = year, y = savings), colour = "black") +
-  geom_line(data = T_avert_fast_optimistic, mapping = aes(x = year, y = savings), colour = "black") +
-  geom_polygon(data = T_avert_poly, mapping = aes(x = year, y = savings), fill = "light gray", alpha = 0.75)
-
+  guides(fill=guide_legend(title="Programme phase", order = 1)) +
+  geom_line(data = T_avert_fast, mapping = aes(x = year+.5, y = savings, colour = "Benefits")) +
+  geom_line(data = T_avert_fast_optimistic, mapping = aes(x = year+.5, y = savings, colour = "Benefits")) +
+  geom_polygon(data = T_avert_poly, mapping = aes(x = year+.5, y = savings), fill = "#999999", alpha = 0.75) +
+  scale_color_manual("", values = "black", guide = guide_legend(order = 0)) + 
+  ggtitle("Accelerated") 
 p1
 
 p2 <- ggplot(T_cost_slow, aes(x = year, y = costs, fill = Phase)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(limits = c(0, 12)) +
-  scale_fill_manual(values = cbp1) +
+  scale_fill_manual(values = cbp1, labels = labels.leg) +
   theme_bw() +
   xlab("Programme year") +
   ylab("Cumulative costs and benefits (millions USD)") + 
-  guides(fill=guide_legend(title="Programme phase")) +
-  geom_line(data = T_avert_slow, mapping = aes(x = year, y = savings), colour = "black") +
-  geom_line(data = T_avert_slow_optimistic, mapping = aes(x = year, y = savings), colour = "black") +
-  geom_polygon(data = T_avert_poly_s, mapping = aes(x = year, y = savings), fill = "gray", alpha = 0.75)
+  guides(fill=guide_legend(title="Programme phase", order = 1)) +
+  geom_line(data = T_avert_slow, mapping = aes(x = year+.5, y = savings, colour = "Benefits")) +
+  geom_line(data = T_avert_slow_optimistic, mapping = aes(x = year+.5, y = savings, colour = "Benefits")) +
+  geom_polygon(data = T_avert_poly_s, mapping = aes(x = year+.5, y = savings), fill = "#999999", alpha = 0.75) +
+  scale_color_manual("", values = "black", guide = guide_legend(order = 0)) + 
+  ggtitle("Sequenced") 
 
 p2
 
-g <- grid.arrange(p1, p2, ncol = 2, nrow = 1)
-ggsave(filename = "13_Writeup/CE_paper/Figures/Fast_vs_Slow.pdf", g, width = 10, height = 5)
+#g <- grid.arrange(p1, p2, ncol = 2, nrow = 1)
+# g <- grid.arrange(p2, p1, ncol = 2, nrow = 1, )
+g <- ggarrange(p1, p2, ncol = 2, nrow = 1, common.legend = T, legend = "right" )
+# ggsave(filename = "13_Writeup/CE_paper/Figures/Fast_vs_Slow.pdf", g, width = 10, height = 5)
+ggsave(filename = "13_Writeup/CE_paper/Figures/Fast_vs_Slow_new.pdf", g, width = 10, height = 5)
+
 
 
 #################################################################
@@ -248,6 +258,19 @@ write.csv(Table2, file = "13_Writeup/CE_paper/Figures/Table2.csv")
 ####### Figure 3- CBR #####
 ###########################
 
+# yog city
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY.RData")
+
+# yog SAR
+load("06_Effectiveness/CE_paper_estimates/YOG_SAR.RData")
+
+# Jakarta
+load("06_Effectiveness/CE_paper_estimates/JAK.RData")
+
+# Bali
+load("06_Effectiveness/CE_paper_estimates/BALI.RData")
+
+
 # to GGplot long format
 ggdat <- matrix(c(YOG_CITY_result[[3]],
                   YOG_SAR_result[[3]],
@@ -282,11 +305,14 @@ ggdat$CBR_high[9] = ggdat$CBR_high[9] - ggdat$CBR_high[8]
 ggdat$CBR_high[12] = ggdat$CBR_high[12] - ggdat$CBR_high[11]
 
 
+
+ggdat <- ggdat %>% group_by(Setting) %>% mutate( CBR_mid_cum = cumsum(CBR_mid))
+
+
 p <- ggplot(ggdat, aes(x=Setting, y=CBR_mid, fill=Type)) + 
-  geom_hline(yintercept = 1) +
   geom_bar(stat="identity",
            position = position_stack(reverse = TRUE)) +
-  #geom_errorbar(aes(ymin=CBR_low, ymax=CBR_high), width=.2) +
+  # geom_errorbar(aes(ymin=CBR_low, ymax=CBR_high), width=.2) +
   scale_x_discrete(limits=c("YOG_CITY", "YOG_SAR", "JAK", "BALI"),
                    labels = c("Yogyakarta city",
                               "Yogyakarta region",
@@ -295,11 +321,16 @@ p <- ggplot(ggdat, aes(x=Setting, y=CBR_mid, fill=Type)) +
                    name = "") +
   scale_y_continuous(name = "Benefits to costs ratio") + 
   scale_fill_brewer(palette="Paired",
-                    labels = c("Direct", "Indirect (non fatal)", "Indirect (fatal)"),
+                    labels = c("Direct (medical)", "Indirect (non fatal)", "Indirect (fatal)"),
                     name = "Type of benefit") + 
-  theme_minimal()
+  #geom_text(aes(y = CBR_mid_cum, label=round(CBR_mid_cum,2)), vjust = 2) +
+  geom_hline(yintercept = 1) +
+  theme_minimal(base_size = 14)
+
+p
 
 ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure.pdf", p, width = 7, height = 5)
+# ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure_with_values.pdf", p, width = 7, height = 5)
 
 
 
@@ -321,11 +352,11 @@ ad0 = ad0[ad0$COUNTRY_ID == "IDN", ]
 ad1 <- readOGR("02_Mapping/Administrative_units/Admin1(2011)/admin1.shp", "admin1")
 ad1 = ad1[ad1$COUNTRY_ID == "IDN", ]
 ad2 <- readOGR("02_Mapping/Administrative_units/Admin2(2011)/admin2.shp", "admin2")
+ad2 = ad2[ad2$COUNTRY_ID == "IDN", ]
 ad3 <- readOGR("02_Mapping/Administrative_units/Admin3/DesaIndonesia.shp", "DesaIndonesia")
 
 roads <- readOGR("02_Mapping/Administrative_units/Roads/IDN_roads.shp", "IDN_roads")
 rivers <- readOGR("02_Mapping/Administrative_units/Rivers/IDN_water_lines_dcw.shp", "IDN_water_lines_dcw")
-
 
 
 # colour palette
@@ -364,7 +395,7 @@ values(BALI) = newvals[(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_resul
 # YOG city
 # load places of special interest
 places <- read.csv("07_Data/Population/Yogya_Sites_of_interest.csv")
-places <- st_as_sf(places, coords = c("Long", "Lat"))
+places <- sf::st_as_sf(places, coords = c("Long", "Lat"))
 places <- places %>% st_set_crs(4326)
 fmap <- YOG_CITY
 ad1_yogcity = crop(ad1, fmap)
@@ -383,13 +414,13 @@ p1 <- tm_shape(ad2_yogcity) +
   #tm_shape(rivers_yogcity) +
   #tm_lines(col = "blue") +
   #tm_shape(ad3_NOTyogcity) +
-  #tm_polygons()
+  # tm_polygons()
   tm_shape(ad2_yogcity) +
   tm_borders() +
-  tm_shape(places) +
-  tm_dots(size = 0.25, alpha = 0.75) +
-  tm_text("Name", size = 0.85, ymod = 1) +
-  tm_scale_bar(position = c("left", "bottom"), size = 0.75)
+  # tm_shape(places) +
+  # tm_dots(size = 0.25, alpha = 0.75) +
+  #tm_text("Name", size = 0.85, ymod = 1) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
 p1
 
 
@@ -530,6 +561,9 @@ admin_CE / pixel_CE # largely comparable
 ### Disaster scenarios ###
 ##########################
 
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY.RData")
+
+
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Passive_monitoring.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Replacement.RData")
@@ -565,9 +599,12 @@ plotdf$Name = c("Baseline", "Low coverage", "Passive monitoring", "Replacement",
 plotdf[, 1:6] = plotdf[, 1:6] / 1000000
 
 BCR_labs <- data.frame(Names = c("BCR = 1.0", "BCR = 2.0", "BCR = 3.0"),
-                       xpos = c(2.5, 2.25, 2),
-                       ypos = c(3.5, 5.5, 7.5),
-                       rotation = c(22.5, 42.5, 55),
+                       # xpos = c(2.5, 2.25, 2),
+                       # ypos = c(3.5, 5.5, 7.5),
+                       # rotation = c(22.5, 42.5, 55),
+                       xpos = c(2, 2, 2),
+                       ypos = c(2.5, 4.5, 6.75),
+                       rotation = c(22.5, 40, 52.5),
                        col = c("grey", "grey", "grey"))
 
 failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
@@ -584,7 +621,8 @@ failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   xlab("Cost (millions USD)") +
   ylab("Benefits (millions USD)") +
   geom_text(aes(label=Name),hjust=c(0.5, 0.7, 0.1, 0.75, 0.5), vjust=c(-1, 2, 2, -1, 2)) +
-  theme_minimal()
+  theme_classic()
+  # theme_minimal()
 failure
 
 ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, width = 7, height = 5)
@@ -594,6 +632,8 @@ ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, wid
 ####################
 ### Tornado plot ###
 ####################
+
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY.RData")
 
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_T_BurdfixH.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_T_BurdfixL.RData")
@@ -653,23 +693,28 @@ plotdf$col = as.numeric(plotdf$var2)[c("black", "blue")]
 
 # order of plots
 
+
 tornado  <- ggplot(plotdf, aes(va1, vals, fill=Direction)) +
   coord_flip() +
   geom_bar(position="identity", stat="identity") +
   scale_fill_manual(values = c(rgb(145/255,207/255,96/255),
                                rgb(252/255,141/255,89/255))) +
-  theme_bw() +
+  theme_minimal( base_size = 14) +
   geom_hline(yintercept = -yog_med) +
   scale_y_continuous(name = "Net cost effectiveness (USD)",
                      breaks = c(-1500, yog_med, -500, 0, 500, 1000, 1500) - yog_med,
                      labels = c(-1500, round(yog_med, 0), -500, 0, 500, 1000, 1500)) +
   scale_x_discrete(name = "",
                    labels = rev(c("Cost per case",
-                                  "Wolbachia cost",
-                                  "Wolbachia Efficacy",
-                                  "Number of cases")))
+                                  expression(atop(paste(italic("Wolbachia"), " cost"), paste("per")~Km^2)),
+                                  expression(atop(italic("Wolbachia"), " efficacy")),
+                                  "Number of cases"))) + 
+  # Leo's add ons
+  annotate(geom="text", x=c(4.55, 4.55), y=c(-400,1150), 
+           label=c("Cost saving", "Cost effective"), 
+           color="black")  
+
 tornado
 
 ggsave(filename = "13_Writeup/CE_paper/Figures/F6_Tornado_figure.pdf", tornado, width = 7, height = 5)
-
 

@@ -1,8 +1,9 @@
 # Estimating cost functions of deployment
 rm(list = ls())
 
-setwd("/Users/eideobra/Dropbox/Indonesia")
-setwd("C:\\Users\\Eideehen\\Dropbox\\Indonesia")
+# setwd("/Users/eideobra/Dropbox/Indonesia")
+# setwd("C:\\Users\\Eideehen\\Dropbox\\Indonesia")
+setwd("~/Dropbox/LSHTM/Indonesia/")
 
 # load site summary data
 #cdat <- read.csv("05_Costs/Site_summary_costs.csv")
@@ -47,29 +48,30 @@ summary(glmmod)
 
 pdf(file = "13_Writeup/CE_paper/Figures/F1_Cost_model_plot.pdf", height = 5, width = 8)
 
+par( mar = c(5.1, 4.8, 4.1, 2.1))
 plot(cdat$Pop_density, cdat$Cost_per_km2,
      col = c(rgb(0,0,0,0.5), rgb(1,0,0,0.5))[cdat$Programme.phase],
      cex = 5 * (cdat$Area / max(cdat$Area)),
-     xlab = expression(paste("Human population density in realease area (thousands people per km "^"2"*")")),
-     ylab = expression(paste("Wolbachia release cost per km"^"2"*"(thousands USD)")),
+     xlab = expression(paste("Human population density in release area (thousands inhabitants per"~km^2,")")),
+     ylab = expression(paste(italic("Wolbachia")," release cost per"~km^2,"(thousands of USD)")),
      pch = 16,
      xaxt="n", yaxt="n")
 grid()
 #points(cdat$Pop_density, cdat$Cost_per_km2, cex = 5 * (cdat$Area / max(cdat$Area)))
 axis(1, at=c(3.2, 3.4, 3.6, 3.8, 4, 4.2, 4.4), labels=c(1.6, 2.5, 4, 6, 10, 25, 40))
-axis(2, at=c(4.4, 4.6, 4.8, 5, 5.2), labels=c("25", "40", "60", "100", "160"))
-text(4.074048, 4.778645, pos=4, label="Indonesia", col = rgb(1,0,0,0.85))
-text(4.001847, 5.288611, pos=2, label=parse(text = "Colombia^b"), col = rgb(0,0,0,0.85))
-text(3.918415, 4.621179, pos=1, label=parse(text = "Colombia^a"), col = rgb(1,0,0,0.85))
-text(4.103060, 4.625335, pos=4, label=parse(text = "Colombia^c"), col = rgb(1,0,0,0.85))
+axis(2, at=c(4.4, 4.6, 4.8, 5, 5.2), labels=c("$25", "$40", "$60", "$100", "$160"))
+text(4.074048, 4.778645, pos=4, label=expression(italic("Indonesia")), col = rgb(1,0,0,0.85))
+text(4.001847, 5.288611, pos=2, label=expression(paste("Colombia")^b), col = rgb(0,0,0,0.85))
+text(3.918415, 4.621179, pos=1, label=expression(paste(italic("Colombia"))^a), col = rgb(1,0,0,0.85))
+text(4.103060, 4.625335, pos=4, label=expression(paste(italic("Colombia"))^c), col = rgb(1,0,0,0.85))
 
-text(4.432571, 5.044466, pos=2, label=expression(paste("Sri Lanka"^"a")), col = rgb(0,0,0,0.85))
-text(3.813114, 4.763716, pos=3, label=expression(paste("Sri Lanka"^"c")), col = rgb(1,0,0,0.85))
-text(3.914742, 4.767179, pos=1, label=expression(paste("Sri Lanka"^"b")), col = rgb(1,0,0,0.85))
-text(3.384681, 4.733796, pos=4, label=parse(text = "Australia^a"), col = rgb(0,0,0,0.85))
-text(3.363880, 4.433216, pos=1, label=parse(text = "Australia^b"), col = rgb(1,0,0,0.85))
-text(3.120687, 4.243814, pos=4, label=parse(text = "Australia^c"), col = rgb(1,0,0,0.85))
-text(3.541006, 4.446590, pos=3, label=parse(text = "Australia^d"), col = rgb(1,0,0,0.85))
+text(4.432571, 5.044466, pos=2, label=expression(paste("Sri Lanka")^a), col = rgb(0,0,0,0.85))
+text(3.813114, 4.763716, pos=3, label=expression(paste(italic("Sri Lanka"))^c), col = rgb(1,0,0,0.85))
+text(3.914742, 4.767179, pos=1, label=expression(paste(italic("Sri Lanka"))^b), col = rgb(1,0,0,0.85))
+text(3.384681, 4.733796, pos=4, label=expression(paste("Australia")^a), col = rgb(0,0,0,0.85))
+text(3.363880, 4.433216, pos=1, label=expression(paste(italic("Australia"))^b), col = rgb(1,0,0,0.85))
+text(3.120687, 4.243814, pos=4, label=expression(paste(italic("Australia"))^c), col = rgb(1,0,0,0.85))
+text(3.541006, 4.446590, pos=3, label=expression(paste(italic("Australia"))^d), col = rgb(1,0,0,0.85))
 text(3.124939, 4.274880, pos=3, label="Vanuatu", col = rgb(0,0,0,0.85))
 
 pred1 <- predict(glmmod, newdata = data.frame(Pop_density = log(c(10^3, 10^5), 10),
@@ -91,7 +93,8 @@ lines(log(c(10^3,10^5), 10), pred2$fit, col = rgb(1,0,0,0.5), lwd = 2)
 lines(log(c(10^3,10^5), 10), pred2$fit - 1 * pred2$se.fit, col = rgb(1,0,0,0.5), lty = 2)
 lines(log(c(10^3,10^5), 10), pred2$fit + 1 * pred2$se.fit, col = rgb(1,0,0,0.5), lty = 2)
 
-legend("topleft", c("Phase 1 and 2", "Phase 2"), col = c(rgb(0,0,0,0.7), rgb(1,0,0,0.7)), 
+legend("topleft", c("Phase 1 and 2", expression(italic("Phase 2"))), col = c(rgb(0,0,0,0.7), rgb(1,0,0,0.7)),
+       text.col = c(rgb(0,0,0,0.7), rgb(1,0,0,0.7)),
        pch = 16, cex = 1.2)
 
 dev.off()
