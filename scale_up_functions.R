@@ -61,8 +61,49 @@ Phase4.cost.estimator <- function(Phase2_costs){
 # billed at the end of the year
 cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
   
-  # reistance emerges and re-releases are required
+  # reistance emerges and nothing is done
   if(Disaster == "Resistance"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^5) +
+      P3 * (0.97^6)
+    P4 = P4 * (0.97^7) +
+      P4 * (0.97^8) +
+      P4 * (0.97^9) +
+      P4 * (0.97^10) +
+      P4 * (0.97^11) +
+      P4 * (0.97^12) +
+      P4 * (0.97^13)
+  }
+  
+  # reistance emerges and re-releases are required
+  if(Disaster == "Resistance_fixed"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3) +
+      (P1_2 / 3) * (0.97^9) +
+      (P1_2 / 3) * (0.97^10)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^5) +
+      P3 * (0.97^6) +
+      P3 * (0.97^11) +
+      P3 * (0.97^12) +
+      P3 * (0.97^13)
+    P4 = P4 * (0.97^7) +
+      P4 * (0.97^8) +
+      P4 * (0.97^14) +
+      P4 * (0.97^15) +
+      P4 * (0.97^16) +
+      P4 * (0.97^17) +
+      P4 * (0.97^18) +
+      P4 * (0.97^19) +
+      P4 * (0.97^20)
+  }
+  
+  # need to replace Wolbachia strain in year 9
+  if(Disaster == "Uncompetitive"){
     P1_2 = (P1_2 / 3) * (0.97^1) + 
       (P1_2 / 3) * (0.97^2) + 
       (P1_2 / 3) * (0.97^3) +
@@ -79,31 +120,6 @@ cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
       P4 * (0.97^14) +
       P4 * (0.97^15)
   }
-  
-  # need to replace Wolbachia strain in year 9
-  if(Disaster == "Replacement"){
-    P1_2 = (P1_2 / 3) * (0.97^1) + 
-      (P1_2 / 3) * (0.97^2) + 
-      (P1_2 / 3) * (0.97^3) +
-      (P1_2 / 3) * (0.97^9) + 
-      (P1_2 / 3) * (0.97^10) + 
-      (P1_2 / 3) * (0.97^11)
-    P3 = P3 * (0.97^4) +
-      P3 * (0.97^5) +
-      P3 * (0.97^6) +
-      P3 * (0.97^12) +
-      P3 * (0.97^13) +
-      P3 * (0.97^14)
-    P4 = P4 * (0.97^7) +
-      P4 * (0.97^8) +
-      P4 * (0.97^15) +
-      P4 * (0.97^16) +
-      P4 * (0.97^17) +
-      P4 * (0.97^18) +
-      P4 * (0.97^19) +
-      P4 * (0.97^20) +
-      P4 * (0.97^21)
-  }
     
     # transition to cheap monitoring (passive disease surveillance) after Phase 3
     if(Disaster == "Passive_monitoring"){
@@ -117,24 +133,24 @@ cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
     }
     
     # transition innovation efficiencies and economies of scale
-    if(Disaster == "Passive_monitoring"){
-      P1_2 = (P1_2 / 3) * (0.97^1) + 
-        (P1_2 / 3) * (0.97^2) + 
-        (P1_2 / 3) * (0.97^3)
-      P3 = P3 * (0.97^4) +
-        P3 * (0.97^5) +
-        P3 * (0.97^6)
-      P4 = P4 * (0.97^7) +
-        P4 * (0.97^8) +
-        P4 * (0.97^9) +
-        P4 * (0.97^10) +
-        P4 * (0.97^11) +
-        P4 * (0.97^12) +
-        P4 * (0.97^13)
-      P1_2 = P1_2 * 0.5
-      P3 = P3 * 0.5
-      P4 = P4 * 0.5
-    }
+    #if(Disaster == "Passive_monitoring"){
+    #  P1_2 = (P1_2 / 3) * (0.97^1) + 
+    #    (P1_2 / 3) * (0.97^2) + 
+    #    (P1_2 / 3) * (0.97^3)
+    #  P3 = P3 * (0.97^4) +
+    #    P3 * (0.97^5) +
+    #    P3 * (0.97^6)
+    #  P4 = P4 * (0.97^7) +
+    #    P4 * (0.97^8) +
+    #    P4 * (0.97^9) +
+    #    P4 * (0.97^10) +
+    #    P4 * (0.97^11) +
+    #    P4 * (0.97^12) +
+    #    P4 * (0.97^13)
+    #  P1_2 = P1_2 * 0.5
+    #  P3 = P3 * 0.5
+    #  P4 = P4 * 0.5
+    #}
   
   if(Disaster == "Special"){
     # just extract median prediction then aggregate across the site
@@ -219,10 +235,12 @@ cost.discounter.sequential <- function(P2, P3, P4, startyear, Disaster = "N"){
     return(T_cost)
 }
 
-benefit.discounter <- function(yearVal, startyear, Disaster = "N"){
+benefit.discounter <- function(yearVal, startyear, Disaster = "N", yearVal_LC = NULL){
   
-  if(Disaster == "Resistance"){
-    yearVal_tot = yearVal * (0.97^(3 + startyear)) +
+  if(Disaster == "Low_coverage_fixed"){
+    yearVal_tot = yearVal_LC * (0.97^(1 + startyear)) +
+      yearVal_LC * (0.97^(2 + startyear)) +
+      yearVal * (0.97^(3 + startyear)) +
       yearVal * (0.97^(4 + startyear)) +
       yearVal * (0.97^(5 + startyear)) +
       yearVal * (0.97^(6 + startyear)) +
@@ -234,12 +252,21 @@ benefit.discounter <- function(yearVal, startyear, Disaster = "N"){
       yearVal * (0.97^(12 + startyear))
   }
   
-  if(Disaster == "Replacement"){
+  
+  if(Disaster == "Resistance"){
+    yearVal_tot = yearVal * (0.97^(1 + startyear)) +
+      yearVal * (0.97^(2 + startyear)) +
+      yearVal * (0.97^(3 + startyear)) +
+      yearVal * (0.97^(4 + startyear))
+  }
+  
+  if(Disaster == "Resistance_fixed"){
     yearVal_tot = yearVal * (0.97^(1 + startyear)) +
       yearVal * (0.97^(2 + startyear)) +
       yearVal * (0.97^(3 + startyear)) +
       yearVal * (0.97^(4 + startyear)) +
-      yearVal * (0.97^(5 + startyear)) +
+      yearVal * (0.97^(8 + startyear)) +
+      yearVal * (0.97^(9 + startyear)) +
       yearVal * (0.97^(10 + startyear)) +
       yearVal * (0.97^(11 + startyear)) +
       yearVal * (0.97^(12 + startyear)) +
@@ -247,9 +274,20 @@ benefit.discounter <- function(yearVal, startyear, Disaster = "N"){
       yearVal * (0.97^(14 + startyear)) +
       yearVal * (0.97^(15 + startyear)) +
       yearVal * (0.97^(16 + startyear)) +
-      yearVal * (0.97^(17 + startyear)) +
-      yearVal * (0.97^(18 + startyear)) +
-      yearVal * (0.97^(19 + startyear))
+      yearVal * (0.97^(17 + startyear))
+  }
+  
+  if(Disaster == "Uncompetitive"){
+    yearVal_tot = yearVal * (0.97^(3 + startyear)) +
+      yearVal * (0.97^(4 + startyear)) +
+      yearVal * (0.97^(5 + startyear)) +
+      yearVal * (0.97^(6 + startyear)) +
+      yearVal * (0.97^(7 + startyear)) +
+      yearVal * (0.97^(8 + startyear)) +
+      yearVal * (0.97^(9 + startyear)) +
+      yearVal * (0.97^(10 + startyear)) +
+      yearVal * (0.97^(11 + startyear)) +
+      yearVal * (0.97^(12 + startyear))
   }
   
   if(Disaster == "Special"){
@@ -354,9 +392,11 @@ raster.close.fix <- function(Aras){
 # EP1 <- mask(crop(worldpop, JAK), JAK)
 # Disaster options:
 # Disaster = Resistance
-# Disaster = Replacement
+# Disaster = Resistance_fixed
+# Disaster = Uncompetitive
 # Disaster = Passive_monitoring
 # Disaster = Low_coverage
+# Disaster = Low_coverage_fixed
 # Disaster = Special
 wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
                          BurdFix = "N", EffFix = "N", ProgCostFix = "N", DisCostFix = "N", 
@@ -392,7 +432,12 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   if(Disaster == "Low_coverage"){
     eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_50, EffFix = EffFix)
   }else{
-    eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_100, EffFix = EffFix)
+    if(Disaster == "Low_coverage_fixed"){
+      eff_maps_LC <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_50, EffFix = EffFix)
+      eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_100, EffFix = EffFix)
+    }else{
+      eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_100, EffFix = EffFix)
+    }
   }
   
   
@@ -407,24 +452,30 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   colnums <- length(burdmapList_sm_f)
   baseline_case_sm <- baseline_case_am <- baseline_case_h <- baseline_case_f <- matrix(NA, nrow = pixros, ncol = colnums)
   avert_case_sm <- avert_case_am <- avert_case_h <- avert_case_f <- matrix(NA, nrow = pixros, ncol = colnums)
-  
+  if(Disaster == "Low_coverage_fixed"){
+    avert_case_sm_LC <- avert_case_am_LC <- avert_case_h_LC <- avert_case_f_LC <- matrix(NA, nrow = pixros, ncol = colnums)
+  }
   # now go through filling out
   for(i in 1:length(burdmapList_sm_f)){
     # Self managed
     baseline_case_sm[, i] = as.vector(burdmapList_sm_f[[i]] * Apop)
     avert_case_sm[, i] = as.vector(burdmapList_sm_f[[i]] * (eff_maps[[i]]) * Apop) * pixIND
+    if(Disaster == "Low_coverage_fixed"){avert_case_sm_LC[, i] = as.vector(burdmapList_sm_f[[i]] * (eff_maps_LC[[i]]) * Apop) * pixIND}
     
     # Ambulatory
     baseline_case_am[, i] = as.vector(burdmapList_am_f[[i]] * Apop)
     avert_case_am[, i] = as.vector(burdmapList_am_f[[i]] * (eff_maps[[i]]) * Apop) * pixIND
+    if(Disaster == "Low_coverage_fixed"){avert_case_am_LC[, i] = as.vector(burdmapList_am_f[[i]] * (eff_maps_LC[[i]]) * Apop) * pixIND}
     
     # Hospitalised
     baseline_case_h[, i] = as.vector(burdmapList_h_f[[i]] * Apop)
     avert_case_h[, i] = as.vector(burdmapList_h_f[[i]] * (eff_maps[[i]]) * Apop) * pixIND
+    if(Disaster == "Low_coverage_fixed"){avert_case_h_LC[, i] = as.vector(burdmapList_h_f[[i]] * (eff_maps_LC[[i]]) * Apop) * pixIND}
     
     # Fatal
     baseline_case_f[, i] = as.vector(burdmapList_f_f[[i]] * Apop)
     avert_case_f[, i] = as.vector(burdmapList_f_f[[i]] * (eff_maps[[i]]) * Apop) * pixIND
+    if(Disaster == "Low_coverage_fixed"){avert_case_f_LC[, i] = as.vector(burdmapList_f_f[[i]] * (eff_maps_LC[[i]]) * Apop) * pixIND}
   }
   
   # clear up
@@ -432,6 +483,7 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   
   t_burd <- baseline_case_sm + baseline_case_am + baseline_case_h + baseline_case_f
   t_burd_avert <- avert_case_sm + avert_case_am + avert_case_h + avert_case_f
+  if(Disaster == "Low_coverage_fixed"){t_burd_avert_LC <- avert_case_sm_LC + avert_case_am_LC + avert_case_h_LC + avert_case_f_LC}
   
   
   ## C) Treatment costs averted
@@ -461,6 +513,16 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   # Fatal indirect costs - assume fatalities are 50% adults, 50% children
   Aver_costs_INdirect_fatal <- 0.5 * avert_case_f * Dengue_costs$Fatal_Child + 0.5 * avert_case_f * Dengue_costs$Fatal_Adult
   
+  if(Disaster == "Low_coverage_fixed"){
+    Aver_costs_direct_LC = ((avert_case_h_LC + avert_case_f_LC) * Dengue_costs$Dir_Hos) +
+      (avert_case_am_LC * Dengue_costs$Dir_Amb) +
+      (avert_case_sm_LC * Dengue_costs$Dir_NM)
+    Aver_costs_INdirect_LC = ((avert_case_h_LC + avert_case_f_LC) * Dengue_costs$Indir_Hos) +
+      (avert_case_am_LC * Dengue_costs$Indir_Amb) +
+      (avert_case_sm_LC * Dengue_costs$Indir_NM)
+    Aver_costs_INdirect_fatal_LC <- 0.5 * avert_case_f_LC * Dengue_costs$Fatal_Child + 0.5 * avert_case_f_LC * Dengue_costs$Fatal_Adult
+  }
+  
   ## D) DALYs averted
   
   # DALY parameters for non severe and severe (Zheng et al.)
@@ -481,11 +543,18 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   YLLs_averted = apply(avert_case_f, 2, function(x) x * sum(Indoage$Prop_dengue * LI_discount))
   rm(avert_case_sm, avert_case_am, avert_case_h, avert_case_f)
   
+  if(Disaster == "Low_coverage_fixed"){
+    YLDs_averted_LC = (avert_case_sm_LC + avert_case_am_LC) * DALY_NS + (avert_case_h_LC + avert_case_f_LC) * DALY_S
+    YLLs_averted_LC = apply(avert_case_f_LC, 2, function(x) x * sum(Indoage$Prop_dengue * LI_discount))
+    rm(avert_case_sm_LC, avert_case_am_LC, avert_case_h_LC, avert_case_f_LC)
+  }
+  
   
   
   # final DALY calc
   DALY_before = YLDs_before + YLLs_before
   DALY_averted = YLDs_averted + YLLs_averted
+  if(Disaster == "Low_coverage_fixed"){DALY_averted_LC = YLDs_averted_LC + YLLs_averted_LC}
   rm(YLDs_before, YLLs_before, YLDs_averted, YLLs_averted)
   
   
@@ -535,11 +604,18 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
     Aver_costs_INdirect_fast_discounted <- benefit.discounter(Aver_costs_INdirect, startyear = 3, Disaster = "N")[pixIND, ]
     Aver_costs_INdirect_fatal_fast_discounted <- benefit.discounter(Aver_costs_INdirect_fatal, startyear = 3, Disaster = "N")[pixIND, ]
   }else{
-    DALY_averted_fast_discounted <- benefit.discounter(DALY_averted, startyear = 3, Disaster)[pixIND, ]
-    Aver_costs_direct_fast_discounted <- benefit.discounter(Aver_costs_direct, startyear = 3, Disaster)[pixIND, ]
-    Aver_costs_INdirect_fast_discounted <- benefit.discounter(Aver_costs_INdirect, startyear = 3, Disaster)[pixIND, ]
-    Aver_costs_INdirect_fatal_fast_discounted <- benefit.discounter(Aver_costs_INdirect_fatal, startyear = 3, Disaster)[pixIND, ]
-  }
+    if(Disaster == "Low_coverage_fixed"){
+      DALY_averted_fast_discounted <- benefit.discounter(DALY_averted, startyear = 3, Disaster, yearVal_LC = DALY_averted_LC)[pixIND, ]
+      Aver_costs_direct_fast_discounted <- benefit.discounter(Aver_costs_direct, startyear = 3, Disaster, yearVal_LC = Aver_costs_direct_LC)[pixIND, ]
+      Aver_costs_INdirect_fast_discounted <- benefit.discounter(Aver_costs_INdirect, startyear = 3, Disaster, yearVal_LC = Aver_costs_INdirect_LC)[pixIND, ]
+      Aver_costs_INdirect_fatal_fast_discounted <- benefit.discounter(Aver_costs_INdirect_fatal, startyear = 3, Disaster, yearVal_LC = Aver_costs_INdirect_fatal_LC)[pixIND, ]
+    }else{
+      DALY_averted_fast_discounted <- benefit.discounter(DALY_averted, startyear = 3, Disaster)[pixIND, ]
+      Aver_costs_direct_fast_discounted <- benefit.discounter(Aver_costs_direct, startyear = 3, Disaster)[pixIND, ]
+      Aver_costs_INdirect_fast_discounted <- benefit.discounter(Aver_costs_INdirect, startyear = 3, Disaster)[pixIND, ]
+      Aver_costs_INdirect_fatal_fast_discounted <- benefit.discounter(Aver_costs_INdirect_fatal, startyear = 3, Disaster)[pixIND, ]
+      }
+    }
   
   # NET costs (fast programme)
   T_cost_fast_NET_direct <- T_cost_fast - Aver_costs_direct_fast_discounted
@@ -720,6 +796,9 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   table1$Area = sum(!is.na(Apopv)) * 100
   table1$Area_perc_covered = 100 * sum(!is.na(Apopv[pixIND])) / sum(!is.na(Apopv))
   
+  #n.b. area is in m^2, want pop density per km2
+  table1$Pop_dens_cov_area = (table1$People * table1$People_perc_covered / 100) / ((table1$Area / 10000) * table1$Area_perc_covered / 100)
+  
   table1$TotalCost_Fast_median = median(colSums(T_cost_fast))
   table1$TotalCost_Fast_low = quantile(colSums(T_cost_fast), prob = 0.025)
   table1$TotalCost_Fast_high = quantile(colSums(T_cost_fast), prob = 0.975)
@@ -736,53 +815,83 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   
   table1 = data.frame(table1)
   
-  
-  ## B) Table 2 - Cost effectiveness
+  ## B) Table 2 - Benefits
   table2 <- list()
-  # percentage reduction (cases only)
+  # cases
+  table2$Baseline_cases_median = quantile(colSums(t_burd, na.rm = T), prob = 0.5)
+  table2$Baseline_cases_low = quantile(colSums(t_burd, na.rm = T), prob = 0.025)
+  table2$Baseline_cases_high = quantile(colSums(t_burd, na.rm = T), prob = 0.975)
+  
+  table2$New_cases_median = quantile(colSums(t_burd, na.rm = T) - colSums(t_burd_avert, na.rm = T), prob = 0.5)
+  table2$New_cases_low = quantile(colSums(t_burd, na.rm = T) - colSums(t_burd_avert, na.rm = T), prob = 0.025)
+  table2$New_cases_high = quantile(colSums(t_burd, na.rm = T) - colSums(t_burd_avert, na.rm = T), prob = 0.975)
+  
+  # percentage reductions
   table2$Cases_averted_perc_median = 100 * quantile(colSums(t_burd_avert, na.rm = T) / colSums(t_burd, na.rm = T), prob = 0.5)
   table2$Cases_averted_perc_low = 100 * quantile(colSums(t_burd_avert, na.rm = T) / colSums(t_burd, na.rm = T), prob = 0.025)
   table2$Cases_averted_perc_high = 100 * quantile(colSums(t_burd_avert, na.rm = T) / colSums(t_burd, na.rm = T), prob = 0.975)
   
-  # gross $/DALY
-  table2$dollar_per_DALY_fast_Gross_median = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.5))
-  table2$dollar_per_DALY_fast_Gross_low = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.025))
-  table2$dollar_per_DALY_fast_Gross_high = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.975))
+  table2$Cases_averted_RelArea_perc_median = 100 * quantile(colSums(t_burd_avert[pixIND, ], na.rm = T) / colSums(t_burd[pixIND, ], na.rm = T), prob = 0.5)
+  table2$Cases_averted_RelArea_perc_low = 100 * quantile(colSums(t_burd_avert[pixIND, ], na.rm = T) / colSums(t_burd[pixIND, ], na.rm = T), prob = 0.025)
+  table2$Cases_averted_RelArea_perc_high = 100 * quantile(colSums(t_burd_avert[pixIND, ], na.rm = T) / colSums(t_burd[pixIND, ], na.rm = T), prob = 0.975)
   
-  table2$dollar_per_DALY_fast_Net_INdirectFAT_median = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.5))
-  table2$dollar_per_DALY_fast_Net_INdirectFAT_low = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.025))
-  table2$dollar_per_DALY_fast_Net_INdirectFAT_high = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.975))
+  # averted costs
+  table2$Aver_costs_direct_median = quantile(colSums(Aver_costs_direct, na.rm = T), prob = 0.5)
+  table2$Aver_costs_direct_low = quantile(colSums(Aver_costs_direct, na.rm = T), prob = 0.025)
+  table2$Aver_costs_direct_high = quantile(colSums(Aver_costs_direct, na.rm = T), prob = 0.975)
   
-  table2$dollar_per_DALY_slow_Gross_median = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.5))
-  table2$dollar_per_DALY_slow_Gross_low = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.025))
-  table2$dollar_per_DALY_slow_Gross_high = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.975))
+  table2$Aver_costs_INdirect_median = quantile(colSums(Aver_costs_INdirect, na.rm = T), prob = 0.5)
+  table2$Aver_costs_INdirect_low = quantile(colSums(Aver_costs_INdirect, na.rm = T), prob = 0.025)
+  table2$Aver_costs_INdirect_high = quantile(colSums(Aver_costs_INdirect, na.rm = T), prob = 0.975)
   
-  table2$dollar_per_DALY_fslow_Net_INdirectFAT_median = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.5))
-  table2$dollar_per_DALY_fslow_Net_INdirectFAT_low = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.025))
-  table2$dollar_per_DALY_fslow_Net_INdirectFAT_high = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.975))
+  table2$Aver_costs_INdirect_fatal_median = quantile(colSums(Aver_costs_INdirect_fatal, na.rm = T), prob = 0.5)
+  table2$Aver_costs_INdirect_fatal_low = quantile(colSums(Aver_costs_INdirect_fatal, na.rm = T), prob = 0.025)
+  table2$Aver_costs_INdirect_fatal_high = quantile(colSums(Aver_costs_INdirect_fatal, na.rm = T), prob = 0.975)
   
-  table2 = data.frame(table2)
   
-  ## C) Table 3 - Benefit - Cost ratios
+  ## C) Table 3 - Cost effectiveness
   table3 <- list()
   
+  # gross and net $/DALY
+  table3$dollar_per_DALY_fast_Gross_median = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.5))
+  table3$dollar_per_DALY_fast_Gross_low = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.025))
+  table3$dollar_per_DALY_fast_Gross_high = quantile(colSums(T_cost_fast, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.975))
+  
+  table3$dollar_per_DALY_fast_Net_INdirectFAT_median = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.5))
+  table3$dollar_per_DALY_fast_Net_INdirectFAT_low = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.025))
+  table3$dollar_per_DALY_fast_Net_INdirectFAT_high = quantile(colSums(T_cost_fast_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_fast_discounted, na.rm = T), prob = c(0.975))
+  
+  table3$dollar_per_DALY_slow_Gross_median = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.5))
+  table3$dollar_per_DALY_slow_Gross_low = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.025))
+  table3$dollar_per_DALY_slow_Gross_high = quantile(colSums(T_cost_slow, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.975))
+  
+  table3$dollar_per_DALY_slow_Net_INdirectFAT_median = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.5))
+  table3$dollar_per_DALY_slow_Net_INdirectFAT_low = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.025))
+  table3$dollar_per_DALY_slow_Net_INdirectFAT_high = quantile(colSums(T_cost_slow_NET_D_IND_F, na.rm = T) / colSums(DALY_averted_slow_discounted, na.rm = T), prob = c(0.975))
+  
+  table3 = data.frame(table3)
+  
+  
+  ## C) Table 4 - Benefit - Cost ratios
+  table4 <- list()
+  
   # medical
-  table3$Direct_slow_median <- median((Aver_costs_direct_slow_discounted) / T_cost_slow, na.rm = T)
-  table3$Direct_f_slow_low <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
-  table3$Direct_f_slow_high <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
+  table4$Direct_slow_median <- median((Aver_costs_direct_slow_discounted) / T_cost_slow, na.rm = T)
+  table4$Direct_f_slow_low <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
+  table4$Direct_f_slow_high <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
   
   
   # societal (excluding fatal)
-  table3$INdirect_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, na.rm = T)
-  table3$INdirect_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
-  table3$INdirect_slow_high <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
+  table4$INdirect_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, na.rm = T)
+  table4$INdirect_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
+  table4$INdirect_slow_high <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
   
   # soceital (including fatal)
-  table3$INdirect_f_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, na.rm = T)
-  table3$INdirect_f_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
-  table3$INdirect_f_slow_high <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
+  table4$INdirect_f_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, na.rm = T)
+  table4$INdirect_f_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
+  table4$INdirect_f_slow_high <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
   
-  table3 = data.frame(table3)
+  table4 = data.frame(table4)
   
   ## D) Maps - of gross CE and programme phases
   # gross CE
@@ -808,7 +917,8 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   rtnlist[[1]] = table1
   rtnlist[[2]] = table2
   rtnlist[[3]] = table3
-  rtnlist[[4]] = map_list
+  rtnlist[[4]] = table4
+  rtnlist[[5]] = map_list
   
   return(rtnlist)
 }

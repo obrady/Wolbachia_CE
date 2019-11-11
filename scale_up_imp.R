@@ -1,6 +1,6 @@
 rm(list = ls())
 
-setwd("/Users/eideobra/Dropbox/Indonesia")
+setwd("/Users/eideobra/Dropbox/07_Indonesia")
 
 require(raster)
 require(rgdal)
@@ -38,7 +38,7 @@ burdmapList_am <- list()
 burdmapList_h <- list()
 burdmapList_f <- list()
 burdmapList_symp <- list()
-# there are 1,000 realisations in this, but just take the first 100 for now to reduce runtime
+# there are 1,000 realisations, just take 100 for now to speed up
 for(i in 1:100){
   exmap_sm <- Popu
   exmap_am <- Popu
@@ -177,9 +177,13 @@ save(YOG_CITY_result, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY.RData
 YOG_CITY_result_A1 <- wol.scale.up(YOG_CITY, Disaster = "Resistance", YOG_city = TRUE)
 save(YOG_CITY_result_A1, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData");rm(YOG_CITY_result_A1)
 
-# A2) Replacement
-YOG_CITY_result_A2 <- wol.scale.up(YOG_CITY, Disaster = "Replacement", YOG_city = TRUE)
-save(YOG_CITY_result_A2, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Replacement.RData");rm(YOG_CITY_result_A2)
+# A1B) Resistance
+YOG_CITY_result_A1B <- wol.scale.up(YOG_CITY, Disaster = "Resistance_fixed", YOG_city = TRUE)
+save(YOG_CITY_result_A1B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData");rm(YOG_CITY_result_A1B)
+
+# A2) Initially uncompetitive
+YOG_CITY_result_A2 <- wol.scale.up(YOG_CITY, Disaster = "Uncompetitive", YOG_city = TRUE)
+save(YOG_CITY_result_A2, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Uncompetitive.RData");rm(YOG_CITY_result_A2)
 
 # A3) Passive_monitoring
 YOG_CITY_result_A3 <- wol.scale.up(YOG_CITY, Disaster = "Passive_monitoring", YOG_city = TRUE)
@@ -188,6 +192,10 @@ save(YOG_CITY_result_A3, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_
 # A4) Low_coverage
 YOG_CITY_result_A4 <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage", YOG_city = TRUE)
 save(YOG_CITY_result_A4, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage.RData");rm(YOG_CITY_result_A4)
+
+# A4B) Low_coverage_fixed
+YOG_CITY_result_A4B <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage_fixed", YOG_city = TRUE)
+save(YOG_CITY_result_A4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage_fixed.RData");rm(YOG_CITY_result_A4B)
 
 # A5) Special - for plots over time
 wol.scale.up(YOG_CITY, Disaster = "Special")
@@ -240,8 +248,7 @@ JAK_result_admin <- wol.scale.up(Jakarta_city_A3, Admin_constrain = TRUE)
 save(JAK_result_admin, file = "06_Effectiveness/CE_paper_estimates/JAK_Admin_constrained.RData")
 
 
-# D) Bali 
-# reduce the number of realisations for BALI to fit under the memory threshold
+# D) Bali - limit to 1:60 for memory and spped constraints
 burdmapList_sm = burdmapList_sm[1:60]
 burdmapList_am = burdmapList_am[1:60]
 burdmapList_h = burdmapList_h[1:60]
