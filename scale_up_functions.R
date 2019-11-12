@@ -132,25 +132,27 @@ cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
       P4 = 0
     }
     
-    # transition innovation efficiencies and economies of scale
-    #if(Disaster == "Passive_monitoring"){
-    #  P1_2 = (P1_2 / 3) * (0.97^1) + 
-    #    (P1_2 / 3) * (0.97^2) + 
-    #    (P1_2 / 3) * (0.97^3)
-    #  P3 = P3 * (0.97^4) +
-    #    P3 * (0.97^5) +
-    #    P3 * (0.97^6)
-    #  P4 = P4 * (0.97^7) +
-    #    P4 * (0.97^8) +
-    #    P4 * (0.97^9) +
-    #    P4 * (0.97^10) +
-    #    P4 * (0.97^11) +
-    #    P4 * (0.97^12) +
-    #    P4 * (0.97^13)
-    #  P1_2 = P1_2 * 0.5
-    #  P3 = P3 * 0.5
-    #  P4 = P4 * 0.5
-    #}
+    # innovation efficiencies and economies of scale
+  if(Disaster == "Innovation"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^5) +
+      P3 * (0.97^6)
+    P4 = P4 * (0.97^7) +
+      P4 * (0.97^8) +
+      P4 * (0.97^9) +
+      P4 * (0.97^10) +
+      P4 * (0.97^11) +
+      P4 * (0.97^12) +
+      P4 * (0.97^13)
+    
+    P1_2 = 0.5 * P1_2
+    P3 = 0.5 * P3
+    P4 = 0.5 * P4
+  }
+  
   
   if(Disaster == "Special"){
     # just extract median prediction then aggregate across the site

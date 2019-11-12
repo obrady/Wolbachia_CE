@@ -197,7 +197,12 @@ save(YOG_CITY_result_A4, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_
 YOG_CITY_result_A4B <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage_fixed", YOG_city = TRUE)
 save(YOG_CITY_result_A4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage_fixed.RData");rm(YOG_CITY_result_A4B)
 
-# A5) Special - for plots over time
+# A5) Innovation
+YOG_CITY_result_A5 <- wol.scale.up(YOG_CITY, Disaster = "Innovation", YOG_city = TRUE)
+save(YOG_CITY_result_A5, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Innovation.RData");rm(YOG_CITY_result_A4)
+
+
+# A6) Special - for plots over time
 wol.scale.up(YOG_CITY, Disaster = "Special")
 
 
