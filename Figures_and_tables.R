@@ -315,22 +315,22 @@ p <- ggplot(ggdat, aes(x=Setting, y=CBR_mid, fill=Type)) +
   # geom_errorbar(aes(ymin=CBR_low, ymax=CBR_high), width=.2) +
   scale_x_discrete(limits=c("YOG_CITY", "YOG_SAR", "JAK", "BALI"),
                    labels = c("Yogyakarta city",
-                              "Yogyakarta region",
+                              "Yogyakarta SAR",
                               "Jakarta",
                               "Bali"),
                    name = "") +
-  scale_y_continuous(name = "Benefits to costs ratio") + 
+  scale_y_continuous(name = "Benefit-cost ratio") + 
   scale_fill_brewer(palette="Paired",
-                    labels = c("Direct (medical)", "Indirect (non fatal)", "Indirect (fatal)"),
+                    labels = c("Direct (medical)", "Indirect (non-fatal)", "Indirect (fatal)"),
                     name = "Type of benefit") + 
-  #geom_text(aes(y = CBR_mid_cum, label=round(CBR_mid_cum,2)), vjust = 2) +
+  geom_text(aes(y = CBR_mid_cum, label=round(CBR_mid_cum,2)), vjust = 2) +
   geom_hline(yintercept = 1) +
-  theme_minimal(base_size = 14)
+  theme_classic(base_size = 12)
 
 p
 
-ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure.pdf", p, width = 7, height = 5)
-# ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure_with_values.pdf", p, width = 7, height = 5)
+# ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure.pdf", p, width = 7, height = 5)
+ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure_with_values.pdf", p, width = 7, height = 5)
 
 
 
@@ -340,6 +340,21 @@ ggsave(filename = "13_Writeup/CE_paper/Figures/F4_CBR_figure.pdf", p, width = 7,
 ###############################
 ####### Figure 4- CE maps #####
 ###############################
+
+
+# yog city
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY.RData")
+
+# yog SAR
+load("06_Effectiveness/CE_paper_estimates/YOG_SAR.RData")
+
+# Jakarta
+load("06_Effectiveness/CE_paper_estimates/JAK.RData")
+
+# Bali
+load("06_Effectiveness/CE_paper_estimates/BALI.RData")
+
+
 
 # load in some background maps
 Pop2015 <- raster("02_Mapping/Covariates/Dengue_futures_covs/UNICOVS_standard/2015/Pop2015_standard_avgscenarios.grd")
@@ -361,21 +376,25 @@ rivers <- readOGR("02_Mapping/Administrative_units/Rivers/IDN_water_lines_dcw.sh
 
 # colour palette
 #pal = c("#C0C0C0", brewer.pal(9, "YlOrRd"))
-pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlBu")))
-
+# pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlBu")))
+pal = c("#C0C0C0", rev(brewer.pal(8, "BrBG")))
 
 # categorising and standardising the colour scheme
 all_CE_vals <- c(as.vector(YOG_CITY_result[[4]][[1]]),
                  as.vector(YOG_SAR_result[[4]][[1]]),
                  as.vector(JAK_result[[4]][[1]]),
                  as.vector(BALI_result[[4]][[1]]))
+
 catvals <- cut(log(all_CE_vals[(all_CE_vals > 0) & (!is.na(all_CE_vals))]), (9 - 1))
+
 # assign back to vector of maps
 newvals = all_CE_vals
+
 # 0 is unqiue code for Wolbachia not deployed
 newvals[newvals == 0] = "0"
 newvals[(all_CE_vals > 0) & (!is.na(all_CE_vals))] = catvals
 newvals = as.numeric(newvals)
+
 # assign back to new rasters
 YOG_CITY = YOG_CITY_result[[4]][[1]]
 values(YOG_CITY) = newvals[1:length(YOG_CITY_result[[4]][[1]])]
@@ -396,7 +415,7 @@ values(BALI) = newvals[(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_resul
 # load places of special interest
 places <- read.csv("07_Data/Population/Yogya_Sites_of_interest.csv")
 places <- sf::st_as_sf(places, coords = c("Long", "Lat"))
-places <- places %>% st_set_crs(4326)
+places <- places %>% sf::st_set_crs(4326)
 fmap <- YOG_CITY
 ad1_yogcity = crop(ad1, fmap)
 ad2_yogcity = crop(ad2, extent(fmap))
@@ -439,7 +458,7 @@ p2 <- tm_shape(ad1_yogSAR) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_yogSAR) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), size = 0.75) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
   tm_layout(bg.color = "light blue")
 p2
 
@@ -463,7 +482,7 @@ p3 <- tm_shape(ad0_JAK) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_JAK) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), size = 0.75) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
   tm_layout(bg.color = "light blue")
 p3
 
@@ -485,9 +504,65 @@ p4 <- tm_shape(ad0_BALI) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_BALI) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), size = 0.75) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
   tm_layout(bg.color = "light blue")
 p4
+
+
+
+##### Indonesia map
+
+
+# Regions
+
+# Yogyakarta city
+yogcity.bb <- st_bbox(ad2_yogcity) %>% st_as_sfc()
+
+# Yogyakarta SAR
+yogsar.bb <- st_bbox(ad1_yogSAR) %>% st_as_sfc()
+
+
+# Jakarta
+jak.bb <- st_bbox(ad0_JAK) %>% st_as_sfc()
+
+# Bali
+bali.bb <- st_bbox(ad0_BALI) %>% st_as_sfc()
+
+
+library(tmaptools)
+library(sf)
+
+labels.df <- data.frame(
+  places = c("Yogyakarta city", "Yogyakarta SAR", "Jakarta", "Bali"),
+  labels = c("A", "B", "C", "D"),
+  Lat =  c(bb(yogcity.bb)$ymax, bb(yogsar.bb)$ymax, bb(jak.bb)$ymax, bb(bali.bb)$ymax),
+  Long =  c(bb(yogcity.bb)$xmax, bb(yogsar.bb)$xmax, bb(jak.bb)$xmax, bb(bali.bb)$xmax)
+) %>% st_as_sf(coords = c("Long", "Lat")) %>% st_set_crs(4326)
+
+# # Merging Yogyakarta city and sar
+# labels.df <- data.frame(
+#   places = c("Yogyakarta SAR", "Jakarta", "Bali"),
+#   labels = c("A & B", "C", "D"),
+#   Lat =  c( bb(yogsar.bb)$ymax, bb(jak.bb)$ymax, bb(bali.bb)$ymax),
+#   Long =  c( bb(yogsar.bb)$xmax, bb(jak.bb)$xmax, bb(bali.bb)$xmax)
+# ) %>% st_as_sf(coords = c("Long", "Lat")) %>% st_set_crs(4326)
+
+p.IND <- tm_shape(ad1, simplify = 0.01) +
+  tm_polygons() + 
+  # Yog city
+  tm_shape(yogcity.bb ) + tm_borders(lwd = 1.5) + #tm_layout(title = "A", frame = FALSE, bg.color = NA) +
+  tm_shape(yogsar.bb) + tm_borders(lwd = 2) + 
+  tm_shape(jak.bb) + tm_borders(lwd = 2) + 
+  tm_shape(bali.bb) + tm_borders(lwd = 2) +
+  tm_shape(labels.df) +
+  tm_text("labels", size = 1, ymod = 0.25, xmod = c(0.1,0.35,0.25,0.25)) +
+  tm_scale_bar(position = c("right", "bottom"), text.size = 0.75) +
+  tm_layout(bg.color = "light blue")
+
+
+p.IND
+
+
 
 
 # group together
@@ -495,10 +570,13 @@ p4
 #tmap_save(tmap_arrange(p1, p2, p3, p4), file = "13_Writeup/CE_paper/Figures/CE_Maps.pdf",
 #          width = 10, height = 10)
 #tmap_mode(current.mode)
-tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A.pdf", width = 5, height = 5)
-tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B.pdf", width = 5, height = 5)
-tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C.pdf", width = 5, height = 5)
-tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D.pdf", width = 5, height = 5)
+tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A_new.pdf", width = 5, height = 5)
+tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B_new.pdf", width = 5, height = 5)
+tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C_new.pdf", width = 5, height = 5)
+tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D_new.pdf", width = 5, height = 5)
+
+tmap_save(p.IND, file = "13_Writeup/CE_paper/Figures/CE_Maps_Indonesia.pdf", width = 5, height = 5)
+
 
 
 
@@ -607,6 +685,27 @@ BCR_labs <- data.frame(Names = c("BCR = 1.0", "BCR = 2.0", "BCR = 3.0"),
                        rotation = c(22.5, 40, 52.5),
                        col = c("grey", "grey", "grey"))
 
+prop.space <- .9
+space.fixed <- .15
+
+arrows.df <- data.frame( 
+  cost_baseline = rep(plotdf$Cost[1], nrow(plotdf)-1),
+  bene_baseline = rep(plotdf$Bene[1], nrow(plotdf)-1),
+  cost_end = plotdf$Cost[-1],
+  bene_end = plotdf$Bene[-1]
+) %>% mutate(
+  CC = sqrt((bene_end - bene_baseline)^2 + (cost_end - cost_baseline)^2),
+  b = (bene_end - bene_baseline)/(cost_end - cost_baseline),
+  ### Proportional size arrow
+  # cost_end_t = cost_baseline + (cost_end - cost_baseline) / abs(cost_end - cost_baseline) * 
+  #   prop.space * CC / sqrt((1+b^2)),
+  ## Truncated arrow 
+  cost_end_t = cost_baseline + (cost_end - cost_baseline) / abs(cost_end - cost_baseline) * 
+    (CC - space.fixed) / sqrt((1+b^2)),
+  bene_end_t = b * ( cost_end_t - cost_baseline) + bene_baseline
+)
+
+
 failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   geom_point(size = 4, colour = c("black", "dark red", "dark green", "dark red", "orange")) +
   #geom_errorbarh(aes(xmin = Cost_low, xmax = Cost_high)) +
@@ -621,11 +720,20 @@ failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   xlab("Cost (millions USD)") +
   ylab("Benefits (millions USD)") +
   geom_text(aes(label=Name),hjust=c(0.5, 0.7, 0.1, 0.75, 0.5), vjust=c(-1, 2, 2, -1, 2)) +
+  geom_segment(aes(x = cost_baseline, y = bene_baseline,
+                   xend = cost_end_t, yend = bene_end_t),
+               data = arrows.df,
+               arrow = arrow(length = unit(0.03, "npc"), )
+               ) +
   theme_classic()
-  # theme_minimal()
+
 failure
 
-ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, width = 7, height = 5)
+
+
+
+# ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, width = 7, height = 5)
+ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure_with_arrows.pdf", failure, width = 7, height = 5)
 
 
 
@@ -644,8 +752,6 @@ load("06_Effectiveness/CE_paper_estimates/YOG_CITY_T_EffFixL.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_T_ProgCostFixH.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_T_ProgCostFixL.RData")
 
-# YOG_CITY_result_T1A = burden, 2 = effectiveness, 3 = wolbachia cost, 4 = cost per case
-# -> A1 = burden, A2 = cost per case, A3 = wolbachis cost, A4 = wolbachia effectivness
 
 plotdf = data.frame(va1 = c("A1",
                             "A4",
@@ -693,11 +799,13 @@ plotdf$col = as.numeric(plotdf$var2)[c("black", "blue")]
 
 # order of plots
 
-
-tornado  <- ggplot(plotdf, aes(va1, vals, fill=Direction)) +
+plotdf
+#tornado  <- plotdf %>% group_by(va1) %>% mutate( a = sum(abs(vals))) %>% ggplot( aes(x = reorder(va1, a), y = vals, fill=Direction)) +
+tornado  <- plotdf %>% group_by(va1) %>% mutate( width = sum(abs(vals))) %>% ggplot( aes(x = reorder(va1, width), y = vals, fill=Direction)) +
   coord_flip() +
   geom_bar(position="identity", stat="identity") +
-  scale_fill_manual(values = c(rgb(145/255,207/255,96/255),
+  scale_fill_manual("Direction of \n parameter", 
+                    values = c(rgb(145/255,207/255,96/255),
                                rgb(252/255,141/255,89/255))) +
   theme_minimal( base_size = 14) +
   geom_hline(yintercept = -yog_med) +
@@ -705,16 +813,20 @@ tornado  <- ggplot(plotdf, aes(va1, vals, fill=Direction)) +
                      breaks = c(-1500, yog_med, -500, 0, 500, 1000, 1500) - yog_med,
                      labels = c(-1500, round(yog_med, 0), -500, 0, 500, 1000, 1500)) +
   scale_x_discrete(name = "",
-                   labels = rev(c("Cost per case",
-                                  expression(atop(paste(italic("Wolbachia"), " cost"), paste("per")~Km^2)),
-                                  expression(atop(italic("Wolbachia"), " efficacy")),
-                                  "Number of cases"))) + 
-  # Leo's add ons
-  annotate(geom="text", x=c(4.55, 4.55), y=c(-400,1150), 
-           label=c("Cost saving", "Cost effective"), 
-           color="black")  
+                   labels = rev(c(
+                     "Number of cases", #A1
+                     expression(atop(paste(italic("Wolbachia"), " cost"), paste("per")~Km^2)), # A3
+                     "Cost per case", # A2
+                     expression(atop(italic("Wolbachia"), " efficacy")) # A4
+                     ))) +
+  # # Leo's add ons
+  # annotate(geom="text", x=c(4.55, 4.55), y=c(-400,1150),
+  annotate(geom="text", x=c(4.525, 4.525), y=c(-250,1300),
+                    label=c("Cost saving", "Cost effective"),
+           color="black")
 
 tornado
+
 
 ggsave(filename = "13_Writeup/CE_paper/Figures/F6_Tornado_figure.pdf", tornado, width = 7, height = 5)
 
