@@ -377,7 +377,8 @@ rivers <- readOGR("02_Mapping/Administrative_units/Rivers/IDN_water_lines_dcw.sh
 # colour palette
 #pal = c("#C0C0C0", brewer.pal(9, "YlOrRd"))
 # pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlBu")))
-pal = c("#C0C0C0", rev(brewer.pal(8, "BrBG")))
+# pal = c("#C0C0C0", rev(brewer.pal(8, "BrBG")))
+pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlGn")))
 
 # categorising and standardising the colour scheme
 all_CE_vals <- c(as.vector(YOG_CITY_result[[4]][[1]]),
@@ -424,11 +425,24 @@ ad3_yogcity = ad3[ad3$PROPINSI == "DI. Yogyakarta",]
 rivers_yogcity = crop(rivers, extent(fmap))
 
 
-p1 <- tm_shape(ad2_yogcity) +
-  tm_polygons() +
+
+
+# Yogyakarta city
+
+# Bounding box
+yogcity.bb <- st_bbox(ad2_yogcity) %>% st_as_sfc()
+
+osm_yogcity <- read_osm(x = bb(yogcity.bb) )
+
+
+p1 <- 
+  # openstreet map
+  tm_shape(osm_yogcity) + tm_rgb() +  
+  # usual style
+  # tm_shape(ad2_yogcity) + tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))])) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = .5) +
   tm_legend(show=FALSE) +
   #tm_shape(rivers_yogcity) +
   #tm_lines(col = "blue") +
@@ -440,21 +454,37 @@ p1 <- tm_shape(ad2_yogcity) +
   # tm_dots(size = 0.25, alpha = 0.75) +
   #tm_text("Name", size = 0.85, ymod = 1) +
   tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
-p1
+
+p1 
 
 
 
 # YOG SAR
+
+ 
+
 fmap <- YOG_SAR
+
+# Merging Yogyakarta city and SAR
+fmap <- raster::merge(YOG_CITY, YOG_SAR)
 ad1_yogSAR = crop(ad1, fmap)
 ad2_yogSAR = ad2[ad2$PARENT_ID == 1013669, ]
 ad3_yogSAR = ad3[ad3$PROPINSI == "DI. Yogyakarta",]
 
-p2 <- tm_shape(ad1_yogSAR) +
-  tm_polygons() +
+# Bounding box
+yogsar.bb <- st_bbox(ad1_yogSAR) %>% st_as_sfc()
+
+osm_yogsar <- read_osm(x = bb(yogsar.bb) )
+
+p2 <- 
+  # openstreet map
+  tm_shape(osm_yogsar) + tm_rgb() +  
+  # usual style
+  # tm_shape(ad1_yogSAR) +
+  #tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))])) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = .5) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_yogSAR) +
   tm_borders() +
@@ -465,6 +495,9 @@ p2
 
 
 # Jakarta
+
+
+
 fmap <- JAK
 # remove paracel islands
 fmap = crop(fmap, extent(c(106.638703, 106.9737 ,  -6.376053,  -6.034424)))
@@ -474,21 +507,31 @@ ad1_JAK = crop(ad1, fmap)
 ad2_JAK = ad2[ad2$PARENT_ID == 1013676, ]
 ad3_JAK = ad3[ad3$PROPINSI == "DKI Jakarta",]
 
-p3 <- tm_shape(ad0_JAK) +
-  tm_polygons() +
+# Bounding box
+jak.bb <- st_bbox(ad0_JAK) %>% st_as_sfc()
+
+osm_jak <- read_osm(x = bb(jak.bb) )
+
+
+p3 <- 
+  # openstreet map
+  tm_shape(osm_jak) + tm_rgb() +  
+  # usual style
+  # tm_shape(ad0_JAK) + tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))])) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 0.5) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_JAK) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
-  tm_layout(bg.color = "light blue")
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) #+  tm_layout(bg.color = "light blue")
 p3
 
 
 
 # BALI
+
+
 fmap <- BALI
 
 ad0_BALI = crop(ad0, fmap)
@@ -496,11 +539,20 @@ ad1_BALI = crop(ad1, fmap)
 ad2_BALI = ad2[ad2$PARENT_ID == 1013678, ]
 #ad3_BALI = ad3[ad3$PROPINSI == "DKI Jakarta",]
 
-p4 <- tm_shape(ad0_BALI) +
-  tm_polygons() +
+
+# Bounding box
+bali.bb <- st_bbox(ad0_BALI) %>% st_as_sfc()
+
+osm_bali <- read_osm(x = bb(bali.bb) )
+
+p4 <- 
+  # openstreet map
+  tm_shape(osm_bali) + tm_rgb() +  
+  # usual style
+  # tm_shape(ad0_BALI) +  tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))])) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 0.5) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_BALI) +
   tm_borders() +
@@ -510,24 +562,6 @@ p4
 
 
 
-##### Indonesia map
-
-
-# Regions
-
-# Yogyakarta city
-yogcity.bb <- st_bbox(ad2_yogcity) %>% st_as_sfc()
-
-# Yogyakarta SAR
-yogsar.bb <- st_bbox(ad1_yogSAR) %>% st_as_sfc()
-
-
-# Jakarta
-jak.bb <- st_bbox(ad0_JAK) %>% st_as_sfc()
-
-# Bali
-bali.bb <- st_bbox(ad0_BALI) %>% st_as_sfc()
-
 
 library(tmaptools)
 library(sf)
@@ -535,7 +569,7 @@ library(sf)
 labels.df <- data.frame(
   places = c("Yogyakarta city", "Yogyakarta SAR", "Jakarta", "Bali"),
   labels = c("A", "B", "C", "D"),
-  Lat =  c(bb(yogcity.bb)$ymax, bb(yogsar.bb)$ymax, bb(jak.bb)$ymax, bb(bali.bb)$ymax),
+  Lat =  c(bb(yogsar.bb)$ymin, bb(yogsar.bb)$ymax, bb(jak.bb)$ymax, bb(bali.bb)$ymax),
   Long =  c(bb(yogcity.bb)$xmax, bb(yogsar.bb)$xmax, bb(jak.bb)$xmax, bb(bali.bb)$xmax)
 ) %>% st_as_sf(coords = c("Long", "Lat")) %>% st_set_crs(4326)
 
@@ -547,17 +581,23 @@ labels.df <- data.frame(
 #   Long =  c( bb(yogsar.bb)$xmax, bb(jak.bb)$xmax, bb(bali.bb)$xmax)
 # ) %>% st_as_sf(coords = c("Long", "Lat")) %>% st_set_crs(4326)
 
-p.IND <- tm_shape(ad1, simplify = 0.01) +
-  tm_polygons() + 
+
+# OSM
+osm_IND <- read_osm(x = bb(ad1) )
+
+
+p.IND <- 
+  tm_shape(osm_IND) + tm_rgb() + 
+  #tm_shape(ad1, simplify = 0.01) + tm_polygons() + 
   # Yog city
   tm_shape(yogcity.bb ) + tm_borders(lwd = 1.5) + #tm_layout(title = "A", frame = FALSE, bg.color = NA) +
   tm_shape(yogsar.bb) + tm_borders(lwd = 2) + 
   tm_shape(jak.bb) + tm_borders(lwd = 2) + 
   tm_shape(bali.bb) + tm_borders(lwd = 2) +
   tm_shape(labels.df) +
-  tm_text("labels", size = 1, ymod = 0.25, xmod = c(0.1,0.35,0.25,0.25)) +
-  tm_scale_bar(position = c("right", "bottom"), text.size = 0.75) +
-  tm_layout(bg.color = "light blue")
+  tm_text("labels", size = 1, ymod = 0.25, xmod = c(0.1,0.35,0.25,0.25)) 
+  # tm_scale_bar(position = c("right", "bottom"), text.size = 0.75) +
+  # tm_layout(bg.color = "light blue")
 
 
 p.IND
@@ -570,12 +610,12 @@ p.IND
 #tmap_save(tmap_arrange(p1, p2, p3, p4), file = "13_Writeup/CE_paper/Figures/CE_Maps.pdf",
 #          width = 10, height = 10)
 #tmap_mode(current.mode)
-tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A_new.pdf", width = 5, height = 5)
-tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B_new.pdf", width = 5, height = 5)
-tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C_new.pdf", width = 5, height = 5)
-tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D_new.pdf", width = 5, height = 5)
+tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A_newOSM.pdf", width = 5, height = 5)
+tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B_newOSM.pdf", width = 5, height = 5)
+tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C_newOSM.pdf", width = 5, height = 5)
+tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D_newOSM.pdf", width = 5, height = 5)
 
-tmap_save(p.IND, file = "13_Writeup/CE_paper/Figures/CE_Maps_Indonesia.pdf", width = 5, height = 5)
+tmap_save(p.IND, file = "13_Writeup/CE_paper/Figures/CE_Maps_IndonesiaOSM.pdf", width = 5, height = 5)
 
 
 
