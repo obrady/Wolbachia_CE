@@ -46,9 +46,10 @@ round.func <- function(x, YOGCITY = FALSE){
   x[2] = round(x[2], 1)
   x[3] = round(x[3] / (100 * 100), 2)
   x[4] = round(x[4], 1)
-  x[5:10] = round(x[5:10] / 1000000, 2)
-  if(YOGCITY){x[8:10] = NA}
-  x[11:16] = round(x[11:16], 2)
+  x[5] = round(x[5], 0)
+  x[6:11] = round(x[6:11] / 1000000, 2)
+  if(YOGCITY){x[9:11] = NA}
+  x[12:17] = round(x[12:17], 2)
   
   return(as.numeric(x))
 }
@@ -62,6 +63,7 @@ rownames(Table1) <- c("People_millions",
                       "Perc_covered_by_Wol",
                       "Km2",
                       "Perc_area_covered_by_Wol",
+                      "Pop_dens_release_area",
                       "Cost_millions_F_mid",
                       "Cost_millions_F_low",
                       "Cost_millions_F_high",
@@ -219,25 +221,46 @@ ggsave(filename = "13_Writeup/CE_paper/Figures/Fast_vs_Slow_new.pdf", g, width =
 
 
 #################################################################
-####### table 2- cost effectiveness of different programmes #####
+####### table 2- benefits #####
+#################################################################
+
+# rounding function
+round.func <- function(x){
+  x[1:3] = sapply(x[1:3], round, 0)
+  x[4:6] = sapply(x[4:6], round, 0)
+  x[7:9] = sapply(x[7:9], round, 1)
+  x[10:12] = sapply(x[10:12], round, 1)
+  x[13:15] = sapply(x[13:15], function(x) round(x / 1000000, 2))
+  x[16:18] = sapply((unlist(x[16:18]) + unlist(x[19:21])), function(x) round(x / 1000000, 2))
+  
+  return(as.numeric(x[1:18]))
+}
+
+# compile into one table
+Table2 <- data.frame(YOG_CITY = round.func(YOG_CITY_result[[2]]),
+                     YOG_SAR = round.func(YOG_SAR_result[[2]]),
+                     JAKARTA = round.func(JAK_result[[2]]),
+                     BALI = round.func(BALI_result[[2]]))
+write.csv(Table2, file = "13_Writeup/CE_paper/Figures/Table2.csv")
+
+
+#################################################################
+####### table 3- cost effectiveness of different programmes #####
 #################################################################
 
 
 # rounding function
-round.func <- function(x, YOGCITY = FALSE){
+round.func <- function(x){
   return(as.numeric(round(x, 0)))
 }
 
 # compile into one table
-Table2 <- data.frame(YOG_CITY = round.func(YOG_CITY_result[[2]], YOGCITY = TRUE),
-                     YOG_SAR = round.func(YOG_SAR_result[[2]]),
-                     JAKARTA = round.func(JAK_result[[2]]),
-                     BALI = round.func(BALI_result[[2]]))
+Table3 <- data.frame(YOG_CITY = round.func(YOG_CITY_result[[3]]),
+                     YOG_SAR = round.func(YOG_SAR_result[[3]]),
+                     JAKARTA = round.func(JAK_result[[3]]),
+                     BALI = round.func(BALI_result[[3]]))
 
-rownames(Table2) <- c("Perc_cases_averted_mid",
-                      "Perc_cases_averted_low",
-                      "Perc_cases_averted_high",
-                      "CE_Gross_F_mid",
+rownames(Table3) <- c("CE_Gross_F_mid",
                       "CE_Gross_F_low",
                       "CE_Gross_F_high",
                       "CE_NET_F_mid",
@@ -249,7 +272,7 @@ rownames(Table2) <- c("Perc_cases_averted_mid",
                       "CE_NET_S_mid",
                       "CE_NET_S_low",
                       "CE_NET_S_high")
-write.csv(Table2, file = "13_Writeup/CE_paper/Figures/Table2.csv")
+write.csv(Table3, file = "13_Writeup/CE_paper/Figures/Table3.csv")
 
 
 
@@ -272,10 +295,10 @@ load("06_Effectiveness/CE_paper_estimates/BALI.RData")
 
 
 # to GGplot long format
-ggdat <- matrix(c(YOG_CITY_result[[3]],
-                  YOG_SAR_result[[3]],
-                  JAK_result[[3]],
-                  BALI_result[[3]]),
+ggdat <- matrix(c(YOG_CITY_result[[4]],
+                  YOG_SAR_result[[4]],
+                  JAK_result[[4]],
+                  BALI_result[[4]]),
                 ncol = 3, byrow = T)
 
 
@@ -323,7 +346,7 @@ p <- ggplot(ggdat, aes(x=Setting, y=CBR_mid, fill=Type)) +
   scale_fill_brewer(palette="Paired",
                     labels = c("Direct (medical)", "Indirect (non-fatal)", "Indirect (fatal)"),
                     name = "Type of benefit") + 
-  geom_text(aes(y = CBR_mid_cum, label=round(CBR_mid_cum,2)), vjust = 2) +
+  geom_text(aes(y = CBR_mid_cum, label=round(CBR_mid_cum,2)), vjust = 3) +
   geom_hline(yintercept = 1) +
   theme_classic(base_size = 12)
 
@@ -377,14 +400,14 @@ rivers <- readOGR("02_Mapping/Administrative_units/Rivers/IDN_water_lines_dcw.sh
 # colour palette
 #pal = c("#C0C0C0", brewer.pal(9, "YlOrRd"))
 # pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlBu")))
-# pal = c("#C0C0C0", rev(brewer.pal(8, "BrBG")))
-pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlGn")))
+ pal = c("#C0C0C0", rev(brewer.pal(8, "BrBG")))
+#pal = c("#C0C0C0", rev(brewer.pal(8, "RdYlGn")))
 
 # categorising and standardising the colour scheme
-all_CE_vals <- c(as.vector(YOG_CITY_result[[4]][[1]]),
-                 as.vector(YOG_SAR_result[[4]][[1]]),
-                 as.vector(JAK_result[[4]][[1]]),
-                 as.vector(BALI_result[[4]][[1]]))
+all_CE_vals <- c(as.vector(YOG_CITY_result[[5]][[1]]),
+                 as.vector(YOG_SAR_result[[5]][[1]]),
+                 as.vector(JAK_result[[5]][[1]]),
+                 as.vector(BALI_result[[5]][[1]]))
 
 catvals <- cut(log(all_CE_vals[(all_CE_vals > 0) & (!is.na(all_CE_vals))]), (9 - 1))
 
@@ -397,34 +420,41 @@ newvals[(all_CE_vals > 0) & (!is.na(all_CE_vals))] = catvals
 newvals = as.numeric(newvals)
 
 # assign back to new rasters
-YOG_CITY = YOG_CITY_result[[4]][[1]]
-values(YOG_CITY) = newvals[1:length(YOG_CITY_result[[4]][[1]])]
+YOG_CITY = YOG_CITY_result[[5]][[1]]
+values(YOG_CITY) = newvals[1:length(YOG_CITY_result[[5]][[1]])]
 
-YOG_SAR = YOG_SAR_result[[4]][[1]]
-values(YOG_SAR) = newvals[(length(YOG_CITY_result[[4]][[1]]) + 1):(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_result[[4]][[1]]))]
+YOG_SAR = YOG_SAR_result[[5]][[1]]
+values(YOG_SAR) = newvals[(length(YOG_CITY_result[[5]][[1]]) + 1):(length(YOG_CITY_result[[5]][[1]]) + length(YOG_SAR_result[[5]][[1]]))]
 
-JAK = JAK_result[[4]][[1]]
-values(JAK) = newvals[(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_result[[4]][[1]]) + 1):(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_result[[4]][[1]]) + length(JAK_result[[4]][[1]]))]
+JAK = JAK_result[[5]][[1]]
+values(JAK) = newvals[(length(YOG_CITY_result[[5]][[1]]) + length(YOG_SAR_result[[5]][[1]]) + 1):(length(YOG_CITY_result[[5]][[1]]) + length(YOG_SAR_result[[5]][[1]]) + length(JAK_result[[5]][[1]]))]
 
-BALI = BALI_result[[4]][[1]]
-values(BALI) = newvals[(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_result[[4]][[1]]) + length(JAK_result[[4]][[1]]) + 1):(length(YOG_CITY_result[[4]][[1]]) + length(YOG_SAR_result[[4]][[1]]) + length(JAK_result[[4]][[1]]) + length(BALI_result[[4]][[1]]))]
+BALI = BALI_result[[5]][[1]]
+values(BALI) = newvals[(length(YOG_CITY_result[[5]][[1]]) + length(YOG_SAR_result[[5]][[1]]) + length(JAK_result[[5]][[1]]) + 1):(length(YOG_CITY_result[[5]][[1]]) + length(YOG_SAR_result[[5]][[1]]) + length(JAK_result[[5]][[1]]) + length(BALI_result[[5]][[1]]))]
 
 
 
 
 # YOG city
 # load places of special interest
-places <- read.csv("07_Data/Population/Yogya_Sites_of_interest.csv")
-places <- sf::st_as_sf(places, coords = c("Long", "Lat"))
-places <- places %>% sf::st_set_crs(4326)
+#places <- read.csv("07_Data/Population/Yogya_Sites_of_interest.csv")
+#places <- sf::st_as_sf(places, coords = c("Long", "Lat"))
+#places <- places %>% sf::st_set_crs(4326)
 fmap <- YOG_CITY
 ad1_yogcity = crop(ad1, fmap)
 ad2_yogcity = crop(ad2, extent(fmap))
-ad3_yogcity = ad3[ad3$PROPINSI == "DI. Yogyakarta",]
+#ad3_yogcity = ad3[ad3$PROPINSI == "DI. Yogyakarta",]
 #ad3_NOTyogcity = ad3[ad3$PROPINSI != "DI. Yogyakarta",]
-rivers_yogcity = crop(rivers, extent(fmap))
+YOG_CITY_shp <- ad2[ad2$GAUL_CODE == 1013505, ]
+#rivers_yogcity = crop(rivers, extent(fmap))
 
 
+# places of interest
+POI <- data.frame(Name = c("Sultan Palace", "Stasiun Yogyakarta", "Mandala Krida stadium"),
+                  Lat = c(-7.803602, -7.789616, -7.795707),
+                  Long = c(110.364379, 110.363236, 110.384352))
+POI <- sf::st_as_sf(POI, coords = c("Long", "Lat"))
+POI <- POI %>% sf::st_set_crs(4326)
 
 
 # Yogyakarta city
@@ -437,12 +467,12 @@ osm_yogcity <- read_osm(x = bb(yogcity.bb) )
 
 p1 <- 
   # openstreet map
-  tm_shape(osm_yogcity) + tm_rgb() +  
+  #tm_shape(osm_yogcity) + tm_rgb() +  
   # usual style
-  # tm_shape(ad2_yogcity) + tm_polygons() +
+   tm_shape(ad2_yogcity) + tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = .5) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 1) +
   tm_legend(show=FALSE) +
   #tm_shape(rivers_yogcity) +
   #tm_lines(col = "blue") +
@@ -450,9 +480,9 @@ p1 <-
   # tm_polygons()
   tm_shape(ad2_yogcity) +
   tm_borders() +
-  # tm_shape(places) +
-  # tm_dots(size = 0.25, alpha = 0.75) +
-  #tm_text("Name", size = 0.85, ymod = 1) +
+  tm_shape(POI) +
+  tm_dots(size = 0.5, alpha = 1, shape = 1) +
+  tm_text("Name", size = 1, ymod = -1, xmod = -1) +
   tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
 
 p1 
@@ -471,6 +501,13 @@ ad1_yogSAR = crop(ad1, fmap)
 ad2_yogSAR = ad2[ad2$PARENT_ID == 1013669, ]
 ad3_yogSAR = ad3[ad3$PROPINSI == "DI. Yogyakarta",]
 
+# places of interest
+POI <- data.frame(Name = c("Wonosari", "Sentol"),
+                  Lat = c(-7.967125, -7.858739),
+                  Long = c(110.601093, 110.158230))
+POI <- sf::st_as_sf(POI, coords = c("Long", "Lat"))
+POI <- POI %>% sf::st_set_crs(4326)
+
 # Bounding box
 yogsar.bb <- st_bbox(ad1_yogSAR) %>% st_as_sfc()
 
@@ -478,18 +515,23 @@ osm_yogsar <- read_osm(x = bb(yogsar.bb) )
 
 p2 <- 
   # openstreet map
-  tm_shape(osm_yogsar) + tm_rgb() +  
+  #tm_shape(osm_yogsar) + tm_rgb() +  
   # usual style
-  # tm_shape(ad1_yogSAR) +
-  #tm_polygons() +
+  tm_shape(ad1_yogSAR) +
+  tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = .5) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 1) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_yogSAR) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
-  tm_layout(bg.color = "light blue")
+  tm_shape(YOG_CITY_shp) +
+  tm_borders(col = "red") +
+  tm_shape(POI) +
+  tm_dots(size = 0.5, alpha = 1, shape = 1) +
+  tm_text("Name", size = 1, ymod = -1, xmod = -1) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  #tm_layout(bg.color = "light blue")
 p2
 
 
@@ -507,6 +549,13 @@ ad1_JAK = crop(ad1, fmap)
 ad2_JAK = ad2[ad2$PARENT_ID == 1013676, ]
 ad3_JAK = ad3[ad3$PROPINSI == "DKI Jakarta",]
 
+# places of interest
+POI <- data.frame(Name = c("HLP airport", "Kalideres", "Central Jakarta"),
+                  Lat = c(-6.269100, -6.148520, -6.175001),
+                  Long = c(106.889621, 106.702634, 106.827186))
+POI <- sf::st_as_sf(POI, coords = c("Long", "Lat"))
+POI <- POI %>% sf::st_set_crs(4326)
+
 # Bounding box
 jak.bb <- st_bbox(ad0_JAK) %>% st_as_sfc()
 
@@ -515,16 +564,20 @@ osm_jak <- read_osm(x = bb(jak.bb) )
 
 p3 <- 
   # openstreet map
-  tm_shape(osm_jak) + tm_rgb() +  
+  #tm_shape(osm_jak) + tm_rgb() +  
   # usual style
-  # tm_shape(ad0_JAK) + tm_polygons() +
+   tm_shape(ad0_JAK) + tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 0.5) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 1) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_JAK) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) #+  tm_layout(bg.color = "light blue")
+  tm_shape(POI) +
+  tm_dots(size = 0.5, alpha = 1, shape = 1) +
+  tm_text("Name", size = 1, ymod = 1, xmod = -1) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  #tm_layout(bg.color = "light blue")
 p3
 
 
@@ -539,6 +592,12 @@ ad1_BALI = crop(ad1, fmap)
 ad2_BALI = ad2[ad2$PARENT_ID == 1013678, ]
 #ad3_BALI = ad3[ad3$PROPINSI == "DKI Jakarta",]
 
+# places of interest
+POI <- data.frame(Name = c("Central Denpassar", "Semarapura", "Singaraja"),
+                  Lat = c(-8.670529, -8.538417, -8.115096),
+                  Long = c(115.212637, 115.399807, 115.091507))
+POI <- sf::st_as_sf(POI, coords = c("Long", "Lat"))
+POI <- POI %>% sf::st_set_crs(4326)
 
 # Bounding box
 bali.bb <- st_bbox(ad0_BALI) %>% st_as_sfc()
@@ -547,17 +606,20 @@ osm_bali <- read_osm(x = bb(bali.bb) )
 
 p4 <- 
   # openstreet map
-  tm_shape(osm_bali) + tm_rgb() +  
+  #tm_shape(osm_bali) + tm_rgb() +  
   # usual style
-  # tm_shape(ad0_BALI) +  tm_polygons() +
+   tm_shape(ad0_BALI) +  tm_polygons() +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
-            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 0.5) +
+            n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 1) +
   tm_legend(show=FALSE) +
   tm_shape(ad2_BALI) +
   tm_borders() +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75) +
-  tm_layout(bg.color = "light blue")
+  tm_shape(POI) +
+  tm_dots(size = 0.5, alpha = 1, shape = 1) +
+  tm_text("Name", size = 1, ymod = c(0, -1.5, 1), xmod = c(-6, 3, -3)) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  #tm_layout(bg.color = "light blue")
 p4
 
 
@@ -610,10 +672,16 @@ p.IND
 #tmap_save(tmap_arrange(p1, p2, p3, p4), file = "13_Writeup/CE_paper/Figures/CE_Maps.pdf",
 #          width = 10, height = 10)
 #tmap_mode(current.mode)
-tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A_newOSM.pdf", width = 5, height = 5)
-tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B_newOSM.pdf", width = 5, height = 5)
-tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C_newOSM.pdf", width = 5, height = 5)
-tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D_newOSM.pdf", width = 5, height = 5)
+#tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A_newOSM.pdf", width = 5, height = 5)
+#tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B_newOSM.pdf", width = 5, height = 5)
+#tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C_newOSM.pdf", width = 5, height = 5)
+#tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D_newOSM.pdf", width = 5, height = 5)
+
+tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A.pdf", width = 5, height = 5)
+tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B.pdf", width = 5, height = 5)
+tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C.pdf", width = 5, height = 5)
+tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D.pdf", width = 5, height = 5)
+
 
 tmap_save(p.IND, file = "13_Writeup/CE_paper/Figures/CE_Maps_IndonesiaOSM.pdf", width = 5, height = 5)
 
@@ -683,35 +751,67 @@ load("06_Effectiveness/CE_paper_estimates/YOG_CITY.RData")
 
 
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage.RData")
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage_fixed.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Passive_monitoring.RData")
-load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Replacement.RData")
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Innovation.RData")
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Uncompetitive.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData")
+load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData")
 
 # Benefits / costs
 BCR = colSums(matrix(unlist(YOG_CITY_result[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result[[3]]), ncol = 3, byrow = T)[2, ]
+BCR_A5 = colSums(matrix(unlist(YOG_CITY_result_A5[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A5[[3]]), ncol = 3, byrow = T)[2, ]
 BCR_A4 = colSums(matrix(unlist(YOG_CITY_result_A4[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4[[3]]), ncol = 3, byrow = T)[2, ]
+BCR_A4B = colSums(matrix(unlist(YOG_CITY_result_A4B[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4B[[3]]), ncol = 3, byrow = T)[2, ]
 BCR_A3 = colSums(matrix(unlist(YOG_CITY_result_A3[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A3[[3]]), ncol = 3, byrow = T)[2, ]
 BCR_A2 = colSums(matrix(unlist(YOG_CITY_result_A2[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A2[[3]]), ncol = 3, byrow = T)[2, ]
 BCR_A1 = colSums(matrix(unlist(YOG_CITY_result_A1[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1[[3]]), ncol = 3, byrow = T)[2, ]
+BCR_A1B = colSums(matrix(unlist(YOG_CITY_result_A1B[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1B[[3]]), ncol = 3, byrow = T)[2, ]
 
 # costs
 costs = YOG_CITY_result[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
+costs_A5 = YOG_CITY_result_A5[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
 costs_A4 = YOG_CITY_result_A4[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
+costs_A4B = YOG_CITY_result_A4B[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
 costs_A3 = YOG_CITY_result_A3[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
 costs_A2 = YOG_CITY_result_A2[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
 costs_A1 = YOG_CITY_result_A1[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
+costs_A1B = YOG_CITY_result_A1B[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
 
 # benefits
 benefits = BCR * costs
+benefits_A5 = BCR_A5 * costs_A5
 benefits_A4 = BCR_A4 * costs_A4
+benefits_A4B = BCR_A4B * costs_A4B
 benefits_A3 = BCR_A3 * costs_A3
 benefits_A2 = BCR_A2* costs_A2
 benefits_A1 = BCR_A1 * costs_A1
+benefits_A1B = BCR_A1B * costs_A1B
 
-plotdf <- cbind(rbind(costs, costs_A4, costs_A3, costs_A2, costs_A1),
-                rbind(benefits, benefits_A4, benefits_A3, benefits_A2, benefits_A1))
+# annualised costs and benefits
+benefits = benefits / 13
+benefits_A5 = benefits_A5 / 13
+benefits_A4 = benefits_A4 / 13
+benefits_A4B = benefits_A4B / 15
+benefits_A3 = benefits_A3 / 13
+benefits_A2 = benefits_A2 / 15
+benefits_A1 = benefits_A1 / 13
+benefits_A1B = benefits_A1B / 20
+
+costs = costs / 13
+costs_A5 = costs_A5 / 13
+costs_A4 = costs_A4 / 13
+costs_A4B = costs_A4B / 15
+costs_A3 = costs_A3 / 13
+costs_A2 = costs_A2 / 15
+costs_A1 = costs_A1 / 13
+costs_A1B = costs_A1B / 20
+
+
+plotdf <- cbind(rbind(costs, costs_A5, costs_A4, costs_A4B, costs_A3, costs_A2, costs_A1, costs_A1B),
+                rbind(benefits, benefits_A5, benefits_A4, benefits_A4B, benefits_A3, benefits_A2, benefits_A1, benefits_A1B))
 colnames(plotdf) = c("Cost", "Cost_low", "Cost_high", "Bene", "Bene_low", "Bene_high")
-plotdf$Name = c("Baseline", "Low coverage", "Passive monitoring", "Replacement", "Resistance")
+plotdf$Name = c("Baseline", "Innovation", "Low coverage", "Low coverage fixed", "Passive monitoring", "Initially uncompetitive", "Resistance", "Resistance fixed")
 
 # convert to millions
 plotdf[, 1:6] = plotdf[, 1:6] / 1000000
@@ -747,7 +847,8 @@ arrows.df <- data.frame(
 
 
 failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
-  geom_point(size = 4, colour = c("black", "dark red", "dark green", "dark red", "orange")) +
+  #geom_point(size = 4, colour = c("black", "dark red", "dark green", "dark red", "orange")) +
+  geom_point(size = 4, colour = "black") +
   #geom_errorbarh(aes(xmin = Cost_low, xmax = Cost_high)) +
   #geom_errorbar(aes(ymin = Bene_low, ymax = Bene_high)) +
   geom_abline(slope = 1, intercept = 0, colour = "grey") +
@@ -755,10 +856,10 @@ failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   geom_abline(slope = 3, intercept = 0, colour = "grey") +
   #geom_abline(slope = 0.5, intercept = 0, colour = "grey") +
   geom_text(aes(xpos, ypos, label = Names, angle = rotation), BCR_labs, colour = "grey") +
-  scale_x_continuous(limits = c(1, 10)) +
+  scale_x_continuous(limits = c(0, 0.6)) +
   scale_y_continuous(limits = c(1, 15)) +
-  xlab("Cost (millions USD)") +
-  ylab("Benefits (millions USD)") +
+  xlab("Annualisaed cost (millions USD)") +
+  ylab("Annualised benefit (millions USD)") +
   geom_text(aes(label=Name),hjust=c(0.5, 0.7, 0.1, 0.75, 0.5), vjust=c(-1, 2, 2, -1, 2)) +
   geom_segment(aes(x = cost_baseline, y = bene_baseline,
                    xend = cost_end_t, yend = bene_end_t),
@@ -817,19 +918,19 @@ plotdf = data.frame(va1 = c("A1",
                                   "high",
                                   "low",
                                   "high"),
-                    vals = c(YOG_CITY_result_T1A[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T2A[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T3B[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T4A[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T1B[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T2B[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T3A[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median,
-                             YOG_CITY_result_T4B[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median))
+                    vals = c(YOG_CITY_result_T1A[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T2A[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T3B[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T4A[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T1B[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T2B[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T3A[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median,
+                             YOG_CITY_result_T4B[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median))
 
 plotdf$Plevels = plotdf$va1[order(plotdf$vals)]
 
 # median val of Yog_city result:
-yog_med <- YOG_CITY_result[[2]]$dollar_per_DALY_fslow_Net_INdirectFAT_median
+yog_med <- YOG_CITY_result[[3]]$dollar_per_DALY_slow_Net_INdirectFAT_median
 # adjust 0
 plotdf$vals = plotdf$vals - yog_med
 # add colour vector
