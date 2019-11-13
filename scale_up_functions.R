@@ -6,7 +6,7 @@
 newburd.process <- function(x, FArea, Apop){
   # crop to approximate area
   f_extent <- as.vector(extent(FArea))
-  f_extent = c(f_extent[1] * 0.99, f_extent[1] * 1.01, f_extent[3] * 1.01, f_extent[4] * 0.99)
+  f_extent = c(f_extent[1] * 0.99, f_extent[2] * 1.01, f_extent[3] * 1.01, f_extent[4] * 0.99)
   x <- crop(x, extent(f_extent))
   # resample
   x <- resample(x, Apop, method = "bilinear")
