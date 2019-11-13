@@ -8,7 +8,7 @@ require(tmap)
 require(data.table)
 
 # scale up functions
-source("11_Code/CE_PAPER/scale_up_functions.R")
+source("11_Code/CE_PAPER/Wolbachia_CE/scale_up_functions.R")
 
 # 5k population map
 Pop2015 <- raster("02_Mapping/Covariates/Dengue_futures_covs/UNICOVS_standard/2015/Pop2015_standard_avgscenarios.grd")
@@ -254,11 +254,11 @@ save(JAK_result_admin, file = "06_Effectiveness/CE_paper_estimates/JAK_Admin_con
 
 
 # D) Bali - limit to 1:60 for memory and spped constraints
-burdmapList_sm = burdmapList_sm[1:60]
-burdmapList_am = burdmapList_am[1:60]
-burdmapList_h = burdmapList_h[1:60]
-burdmapList_f = burdmapList_f[1:60]
-burdmapList_symp = burdmapList_symp[1:60]
+#burdmapList_sm = burdmapList_sm[1:60]
+#burdmapList_am = burdmapList_am[1:60]
+#burdmapList_h = burdmapList_h[1:60]
+#burdmapList_f = burdmapList_f[1:60]
+#burdmapList_symp = burdmapList_symp[1:60]
 
 BALI_result <- wol.scale.up(BALI)
 save(BALI_result, file = "06_Effectiveness/CE_paper_estimates/BALI.RData")
