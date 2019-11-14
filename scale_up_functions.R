@@ -422,7 +422,7 @@ raster.quantile <- function(ras, quantperc){
 
 # turns mid high and low dengue case cost estiamtes into 100 uncertainty samples
 dCOI_sample <- function(costs, DisCostFix, NUM){
-  costs2 <- apply(costs, 2, function(x) rnorm(n = NUM, 
+  costs2 <- apply(costs, 2, function(x) qnorm(p = seq(1 / NUM, 1 - 1 / NUM, length.out = NUM),
                                               mean = x[2], 
                                               sd = 0.5 * (0.5 * (x[2] - x[1]) + (0.5 * (x[3] - x[2])))))
   # make sure all positive
