@@ -177,7 +177,7 @@ save(YOG_CITY_result, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY.RData
 YOG_CITY_result_A1 <- wol.scale.up(YOG_CITY, Disaster = "Resistance", YOG_city = TRUE)
 save(YOG_CITY_result_A1, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData");rm(YOG_CITY_result_A1)
 
-# A1B) Resistance
+# A1B) Resistance fixed
 YOG_CITY_result_A1B <- wol.scale.up(YOG_CITY, Disaster = "Resistance_fixed", YOG_city = TRUE)
 save(YOG_CITY_result_A1B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData");rm(YOG_CITY_result_A1B)
 
@@ -199,7 +199,7 @@ save(YOG_CITY_result_A4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D
 
 # A5) Innovation
 YOG_CITY_result_A5 <- wol.scale.up(YOG_CITY, Disaster = "Innovation", YOG_city = TRUE)
-save(YOG_CITY_result_A5, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Innovation.RData");rm(YOG_CITY_result_A4)
+save(YOG_CITY_result_A5, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Innovation.RData");rm(YOG_CITY_result_A5)
 
 
 # A6) Special - for plots over time

@@ -482,7 +482,7 @@ p1 <-
   tm_borders() +
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
-  tm_text("Name", size = 1, ymod = -1, xmod = -1) +
+  tm_text("Name", size = 1, ymod = -1, xmod = c(0, 0, -1.5)) +
   tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
 
 p1 
@@ -548,6 +548,7 @@ ad0_JAK = crop(ad0, fmap)
 ad1_JAK = crop(ad1, fmap)
 ad2_JAK = ad2[ad2$PARENT_ID == 1013676, ]
 ad3_JAK = ad3[ad3$PROPINSI == "DKI Jakarta",]
+Kalideres <- ad3[ad3$KECAMATAN == "Kalideres", ]
 
 # places of interest
 POI <- data.frame(Name = c("HLP airport", "Kalideres", "Central Jakarta"),
@@ -575,8 +576,10 @@ p3 <-
   tm_borders() +
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
-  tm_text("Name", size = 1, ymod = 1, xmod = -1) +
+  tm_text("Name", size = 1, ymod = c(-1, 1, 1), xmod = c(-0.75, 0, 1)) +
   tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  #tm_shape(Kalideres) +
+  #tm_borders(col = "red")
   #tm_layout(bg.color = "light blue")
 p3
 
@@ -588,7 +591,7 @@ p3
 fmap <- BALI
 
 ad0_BALI = crop(ad0, fmap)
-ad1_BALI = crop(ad1, fmap)
+ad1_BALI = ad1[ad1$NAME == "BALI", ]
 ad2_BALI = ad2[ad2$PARENT_ID == 1013678, ]
 #ad3_BALI = ad3[ad3$PROPINSI == "DKI Jakarta",]
 
@@ -608,7 +611,8 @@ p4 <-
   # openstreet map
   #tm_shape(osm_bali) + tm_rgb() +  
   # usual style
-   tm_shape(ad0_BALI) +  tm_polygons() +
+  tm_shape(ad0_BALI) +  tm_polygons() +
+  tm_shape(ad1_BALI) + tm_polygons(col = pal[1]) +
   tm_shape(fmap) +
   tm_raster(palette = pal[na.omit(sort(unique(as.vector(fmap)))) + 1],
             n = length(pal[na.omit(sort(unique(as.vector(fmap))))]), alpha = 1) +
@@ -617,7 +621,7 @@ p4 <-
   tm_borders() +
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
-  tm_text("Name", size = 1, ymod = c(0, -1.5, 1), xmod = c(-6, 3, -3)) +
+  tm_text("Name", size = 1, ymod = c(-1, -1.5, 1), xmod = c(-5, 3, -3)) +
   tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
   #tm_layout(bg.color = "light blue")
 p4
@@ -680,7 +684,7 @@ p.IND
 tmap_save(p1, file = "13_Writeup/CE_paper/Figures/CE_Maps_A.pdf", width = 5, height = 5)
 tmap_save(p2, file = "13_Writeup/CE_paper/Figures/CE_Maps_B.pdf", width = 5, height = 5)
 tmap_save(p3, file = "13_Writeup/CE_paper/Figures/CE_Maps_C.pdf", width = 5, height = 5)
-tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D.pdf", width = 5, height = 5)
+tmap_save(p4, file = "13_Writeup/CE_paper/Figures/CE_Maps_D.pdf", width = 7, height = 5)
 
 
 tmap_save(p.IND, file = "13_Writeup/CE_paper/Figures/CE_Maps_IndonesiaOSM.pdf", width = 5, height = 5)
@@ -759,14 +763,14 @@ load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData")
 
 # Benefits / costs
-BCR = colSums(matrix(unlist(YOG_CITY_result[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A5 = colSums(matrix(unlist(YOG_CITY_result_A5[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A5[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A4 = colSums(matrix(unlist(YOG_CITY_result_A4[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A4B = colSums(matrix(unlist(YOG_CITY_result_A4B[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4B[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A3 = colSums(matrix(unlist(YOG_CITY_result_A3[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A3[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A2 = colSums(matrix(unlist(YOG_CITY_result_A2[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A2[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A1 = colSums(matrix(unlist(YOG_CITY_result_A1[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1[[3]]), ncol = 3, byrow = T)[2, ]
-BCR_A1B = colSums(matrix(unlist(YOG_CITY_result_A1B[[3]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1B[[3]]), ncol = 3, byrow = T)[2, ]
+BCR = colSums(matrix(unlist(YOG_CITY_result[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A5 = colSums(matrix(unlist(YOG_CITY_result_A5[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A5[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A4 = colSums(matrix(unlist(YOG_CITY_result_A4[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A4B = colSums(matrix(unlist(YOG_CITY_result_A4B[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4B[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A3 = colSums(matrix(unlist(YOG_CITY_result_A3[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A3[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A2 = colSums(matrix(unlist(YOG_CITY_result_A2[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A2[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A1 = colSums(matrix(unlist(YOG_CITY_result_A1[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1[[4]]), ncol = 3, byrow = T)[2, ]
+BCR_A1B = colSums(matrix(unlist(YOG_CITY_result_A1B[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1B[[4]]), ncol = 3, byrow = T)[2, ]
 
 # costs
 costs = YOG_CITY_result[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
@@ -788,24 +792,6 @@ benefits_A2 = BCR_A2* costs_A2
 benefits_A1 = BCR_A1 * costs_A1
 benefits_A1B = BCR_A1B * costs_A1B
 
-# annualised costs and benefits
-benefits = benefits / 13
-benefits_A5 = benefits_A5 / 13
-benefits_A4 = benefits_A4 / 13
-benefits_A4B = benefits_A4B / 15
-benefits_A3 = benefits_A3 / 13
-benefits_A2 = benefits_A2 / 15
-benefits_A1 = benefits_A1 / 13
-benefits_A1B = benefits_A1B / 20
-
-costs = costs / 13
-costs_A5 = costs_A5 / 13
-costs_A4 = costs_A4 / 13
-costs_A4B = costs_A4B / 15
-costs_A3 = costs_A3 / 13
-costs_A2 = costs_A2 / 15
-costs_A1 = costs_A1 / 13
-costs_A1B = costs_A1B / 20
 
 
 plotdf <- cbind(rbind(costs, costs_A5, costs_A4, costs_A4B, costs_A3, costs_A2, costs_A1, costs_A1B),
@@ -847,8 +833,8 @@ arrows.df <- data.frame(
 
 
 failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
-  #geom_point(size = 4, colour = c("black", "dark red", "dark green", "dark red", "orange")) +
-  geom_point(size = 4, colour = "black") +
+  geom_point(size = c(6, rep(4, 7)), colour = c("black", "dark green", "dark red", "orange", "dark green", "orange", "dark red", "orange")) +
+  #geom_point(size = 4, colour = "black") +
   #geom_errorbarh(aes(xmin = Cost_low, xmax = Cost_high)) +
   #geom_errorbar(aes(ymin = Bene_low, ymax = Bene_high)) +
   geom_abline(slope = 1, intercept = 0, colour = "grey") +
@@ -856,16 +842,16 @@ failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   geom_abline(slope = 3, intercept = 0, colour = "grey") +
   #geom_abline(slope = 0.5, intercept = 0, colour = "grey") +
   geom_text(aes(xpos, ypos, label = Names, angle = rotation), BCR_labs, colour = "grey") +
-  scale_x_continuous(limits = c(0, 0.6)) +
-  scale_y_continuous(limits = c(1, 15)) +
-  xlab("Annualisaed cost (millions USD)") +
-  ylab("Annualised benefit (millions USD)") +
-  geom_text(aes(label=Name),hjust=c(0.5, 0.7, 0.1, 0.75, 0.5), vjust=c(-1, 2, 2, -1, 2)) +
-  geom_segment(aes(x = cost_baseline, y = bene_baseline,
-                   xend = cost_end_t, yend = bene_end_t),
-               data = arrows.df,
-               arrow = arrow(length = unit(0.03, "npc"), )
-               ) +
+  scale_x_continuous(limits = c(4, 13)) +
+  scale_y_continuous(limits = c(4, 13)) +
+  xlab("Cost (millions USD)") +
+  ylab("Benefit (millions USD)") +
+  geom_text(aes(label=Name), hjust=c(0.45, 1, 0, 1, 1, 0.1, 0, -0.1), vjust=c(-2, 1, 2, 2, 1, -1, 2, 1)) +
+  #geom_segment(aes(x = cost_baseline, y = bene_baseline,
+  #                 xend = cost_end_t, yend = bene_end_t),
+  #             data = arrows.df,
+  #             arrow = arrow(length = unit(0.03, "npc"), )
+  #             ) +
   theme_classic()
 
 failure

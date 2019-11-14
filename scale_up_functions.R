@@ -17,7 +17,7 @@ newburd.process <- function(x, FArea, Apop){
 }
 
 # looks up effectiveness based on baseline incidence
-find.eff <- function(x, effmat, EffFix = "N"){
+find.eff <- function(x, effmat, EffFix = "N", col_list){
   # ensemble incidence values (for reference)
   ref_incid = round(seq(0, 100, 0.1), 1)
   # incidence of symptomatic cases (per 1)- need per 1,000 to match with model ensemble values
@@ -29,8 +29,7 @@ find.eff <- function(x, effmat, EffFix = "N"){
   
   # corresponding effectivenesss values
   if(EffFix == "N"){
-    colsam <- sample(1:ncol(effmat), 1)
-    effvals = effmat[cbind(i_vals_match, colsam)]
+    effvals = effmat[cbind(i_vals_match, col_list)]
   }
   if(EffFix == "L"){
     effmat2 = apply(effmat, 1, quantile, probs = 0.025)
@@ -511,18 +510,23 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   }
   
   # effectiveness maps
-  if(Disaster == "Low_coverage"){
-    eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_50, EffFix = EffFix)
-  }else{
-    if(Disaster == "Low_coverage_fixed"){
-      eff_maps_LC <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_50, EffFix = EffFix)
-      eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_100, EffFix = EffFix)
-    }else{
-      eff_maps <- lapply(burdmapList_symp_f, find.eff, effmat = ensem_pred_100, EffFix = EffFix)
-    }
+  # essentially need to match incidence values in each pixel in each raster (items of x) to a row in effmat
+  # while balancing representation from the columns (different models say different things about effectiveness)
+  # find relevant column repreentation
+  mod_times <- floor(length(x) / 8)
+  col_list = c(rep(50, mod_times), rep(150, mod_times), rep(250, mod_times), rep(350, mod_times),
+               rep(450, mod_times), rep(550, mod_times), rep(650, mod_times), rep(750, length(x) - 7 * mod_times))
+  # loop through rasters and calculate an effectiveness raster list
+  eff_maps <- list()
+  if(Disaster == "Low_coverage_fixed"){eff_maps_LC <- list()}
+  for(k in 1:length(burdmapList_symp_f)){
+    if(Disaster == "Low_coverage"){
+      eff_maps[[k]] <- find.eff(burdmapList_symp_f[[k]], effmat = ensem_pred_50, EffFix = EffFix, col_list = col_list[k])
+      }else{
+      eff_maps[[k]] <- find.eff(burdmapList_symp_f[[k]], effmat = ensem_pred_100, EffFix = EffFix, col_list = col_list[k])
+      }
+    if(Disaster == "Low_coverage_fixed"){eff_maps_LC[[k]] <- find.eff(burdmapList_symp_f[[k]], effmat = ensem_pred_50, EffFix = EffFix, col_list = col_list[k])}
   }
-  
-  
   
   
   ## B) calculate baseline burden and cases averted summaries
