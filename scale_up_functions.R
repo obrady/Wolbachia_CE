@@ -120,17 +120,53 @@ cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
       P4 * (0.97^14) +
       P4 * (0.97^15)
   }
+  
+  # Low coverage
+  if(Disaster == "Low_coverage"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^5) +
+      P3 * (0.97^6)
+    P4 = P4 * (0.97^7) +
+      P4 * (0.97^8) +
+      P4 * (0.97^9) +
+      P4 * (0.97^10) +
+      P4 * (0.97^11) +
+      P4 * (0.97^12) +
+      P4 * (0.97^13)
+  }
+  
+  # Low coverage that is then fixed
+  if(Disaster == "Low_coverage_fixed"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3) +
+      (P1_2 / 3) * (0.97^5)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^6) +
+      P3 * (0.97^7) +
+      P3 * (0.97^8)
+    P4 = P4 * (0.97^9) +
+      P4 * (0.97^10) +
+      P4 * (0.97^11) +
+      P4 * (0.97^12) +
+      P4 * (0.97^13) +
+      P4 * (0.97^14) +
+      P4 * (0.97^15)
+  }
     
     # transition to cheap monitoring (passive disease surveillance) after Phase 3
-    if(Disaster == "Passive_monitoring"){
-      P1_2 = (P1_2 / 3) * (0.97^1) + 
-        (P1_2 / 3) * (0.97^2) + 
-        (P1_2 / 3) * (0.97^3)
-      P3 = P3 * (0.97^4) +
-        P3 * (0.97^5) +
-        P3 * (0.97^6)
-      P4 = 0
-    }
+  if(Disaster == "Passive_monitoring"){
+    P1_2 = (P1_2 / 3) * (0.97^1) + 
+      (P1_2 / 3) * (0.97^2) + 
+      (P1_2 / 3) * (0.97^3)
+    P3 = P3 * (0.97^4) +
+      P3 * (0.97^5) +
+      P3 * (0.97^6)
+    P4 = 0
+  }
     
     # innovation efficiencies and economies of scale
   if(Disaster == "Innovation"){
@@ -175,7 +211,9 @@ cost.discounter <- function(P1_2, P3, P4, Disaster = "N"){
              P4 * (0.97^13))
     P3 = rep(0, length(P1_2))
     P4 = rep(0, length(P1_2))
-  }else{
+  }
+  
+  if(Disaster == "N"){
     P1_2 = (P1_2 / 3) * (0.97^1) + 
       (P1_2 / 3) * (0.97^2) + 
       (P1_2 / 3) * (0.97^3)
@@ -239,6 +277,19 @@ cost.discounter.sequential <- function(P2, P3, P4, startyear, Disaster = "N"){
 
 benefit.discounter <- function(yearVal, startyear, Disaster = "N", yearVal_LC = NULL){
   
+  if(Disaster == "Low_coverage"){
+    yearVal_tot = yearVal * (0.97^(1 + startyear)) +
+      yearVal * (0.97^(2 + startyear)) +
+      yearVal * (0.97^(3 + startyear)) +
+      yearVal * (0.97^(4 + startyear)) +
+      yearVal * (0.97^(5 + startyear)) +
+      yearVal * (0.97^(6 + startyear)) +
+      yearVal * (0.97^(7 + startyear)) +
+      yearVal * (0.97^(8 + startyear)) +
+      yearVal * (0.97^(9 + startyear)) +
+      yearVal * (0.97^(10 + startyear))
+  }
+  
   if(Disaster == "Low_coverage_fixed"){
     yearVal_tot = yearVal_LC * (0.97^(1 + startyear)) +
       yearVal_LC * (0.97^(2 + startyear)) +
@@ -292,6 +343,32 @@ benefit.discounter <- function(yearVal, startyear, Disaster = "N", yearVal_LC = 
       yearVal * (0.97^(12 + startyear))
   }
   
+  if(Disaster == "Passive_monitoring"){
+    yearVal_tot = yearVal * (0.97^(1 + startyear)) +
+      yearVal * (0.97^(2 + startyear)) +
+      yearVal * (0.97^(3 + startyear)) +
+      yearVal * (0.97^(4 + startyear)) +
+      yearVal * (0.97^(5 + startyear)) +
+      yearVal * (0.97^(6 + startyear)) +
+      yearVal * (0.97^(7 + startyear)) +
+      yearVal * (0.97^(8 + startyear)) +
+      yearVal * (0.97^(9 + startyear)) +
+      yearVal * (0.97^(10 + startyear))
+  }
+  
+  if(Disaster == "Innovation"){
+    yearVal_tot = yearVal * (0.97^(1 + startyear)) +
+      yearVal * (0.97^(2 + startyear)) +
+      yearVal * (0.97^(3 + startyear)) +
+      yearVal * (0.97^(4 + startyear)) +
+      yearVal * (0.97^(5 + startyear)) +
+      yearVal * (0.97^(6 + startyear)) +
+      yearVal * (0.97^(7 + startyear)) +
+      yearVal * (0.97^(8 + startyear)) +
+      yearVal * (0.97^(9 + startyear)) +
+      yearVal * (0.97^(10 + startyear))
+  }
+  
   if(Disaster == "Special"){
     yearVal = sum(apply(yearVal, 1, median, na.rm = T), na.rm = T)
     # 10 years of benefits
@@ -305,7 +382,9 @@ benefit.discounter <- function(yearVal, startyear, Disaster = "N", yearVal_LC = 
                     yearVal * (0.97^(8 + startyear)),
                     yearVal * (0.97^(9 + startyear)),
                     yearVal * (0.97^(10 + startyear)))
-  }else{
+  }
+  
+  if(Disaster == "N"){
     # 10 years of benefits
     yearVal_tot = yearVal * (0.97^(1 + startyear)) +
       yearVal * (0.97^(2 + startyear)) +
@@ -400,6 +479,7 @@ raster.close.fix <- function(Aras){
 # Disaster = Low_coverage
 # Disaster = Low_coverage_fixed
 # Disaster = Special
+# YOG_city = FALSE ; YOG_sar = FALSE ; BurdFix = "N" ; EffFix = "N" ; ProgCostFix = "N" ; DisCostFix = "N" ; Disaster = "N" ; Admin_constrain = FALSE
 wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
                          BurdFix = "N", EffFix = "N", ProgCostFix = "N", DisCostFix = "N", 
                          Disaster = "N", Admin_constrain = FALSE){
