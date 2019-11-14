@@ -169,62 +169,62 @@ rm(ad1, ad2, Ad3)
 # Part 1: Core tables
 
 # A) Yogcity - runtime ~ 5 mins
-YOG_CITY_result <- wol.scale.up(YOG_CITY, YOG_city = TRUE)
+YOG_CITY_result <- wol.scale.up(YOG_CITY, YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY.RData");rm(YOG_CITY_result)
 
 #### Disaster scenarios
 # A1) Resistance
-YOG_CITY_result_A1 <- wol.scale.up(YOG_CITY, Disaster = "Resistance", YOG_city = TRUE)
+YOG_CITY_result_A1 <- wol.scale.up(YOG_CITY, Disaster = "Resistance", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A1, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData");rm(YOG_CITY_result_A1)
 
 # A1B) Resistance fixed
-YOG_CITY_result_A1B <- wol.scale.up(YOG_CITY, Disaster = "Resistance_fixed", YOG_city = TRUE)
+YOG_CITY_result_A1B <- wol.scale.up(YOG_CITY, Disaster = "Resistance_fixed", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A1B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData");rm(YOG_CITY_result_A1B)
 
 # A2) Initially uncompetitive
-YOG_CITY_result_A2 <- wol.scale.up(YOG_CITY, Disaster = "Uncompetitive", YOG_city = TRUE)
+YOG_CITY_result_A2 <- wol.scale.up(YOG_CITY, Disaster = "Uncompetitive", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A2, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Uncompetitive.RData");rm(YOG_CITY_result_A2)
 
 # A3) Passive_monitoring
-YOG_CITY_result_A3 <- wol.scale.up(YOG_CITY, Disaster = "Passive_monitoring", YOG_city = TRUE)
+YOG_CITY_result_A3 <- wol.scale.up(YOG_CITY, Disaster = "Passive_monitoring", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A3, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Passive_monitoring.RData");rm(YOG_CITY_result_A3)
 
 # A4) Low_coverage
-YOG_CITY_result_A4 <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage", YOG_city = TRUE)
+YOG_CITY_result_A4 <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A4, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage.RData");rm(YOG_CITY_result_A4)
 
 # A4B) Low_coverage_fixed
-YOG_CITY_result_A4B <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage_fixed", YOG_city = TRUE)
+YOG_CITY_result_A4B <- wol.scale.up(YOG_CITY, Disaster = "Low_coverage_fixed", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Low_coverage_fixed.RData");rm(YOG_CITY_result_A4B)
 
 # A5) Innovation
-YOG_CITY_result_A5 <- wol.scale.up(YOG_CITY, Disaster = "Innovation", YOG_city = TRUE)
+YOG_CITY_result_A5 <- wol.scale.up(YOG_CITY, Disaster = "Innovation", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_A5, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Innovation.RData");rm(YOG_CITY_result_A5)
 
 
 # A6) Special - for plots over time
-wol.scale.up(YOG_CITY, Disaster = "Special")
+wol.scale.up(YOG_CITY, Disaster = "Special", FastLoad = "YOG_CITY")
 
 
 #### Tornado plots
-YOG_CITY_result_T1A <- wol.scale.up(YOG_CITY, BurdFix = "L", YOG_city = TRUE)
-YOG_CITY_result_T1B <- wol.scale.up(YOG_CITY, BurdFix = "H", YOG_city = TRUE)
+YOG_CITY_result_T1A <- wol.scale.up(YOG_CITY, BurdFix = "L", YOG_city = TRUE, FastLoad = "YOG_CITY")
+YOG_CITY_result_T1B <- wol.scale.up(YOG_CITY, BurdFix = "H", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_T1A, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_BurdfixL.RData")
 save(YOG_CITY_result_T1B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_BurdfixH.RData")
 
-YOG_CITY_result_T2A <- wol.scale.up(YOG_CITY, EffFix = "L", YOG_city = TRUE)
-YOG_CITY_result_T2B <- wol.scale.up(YOG_CITY, EffFix = "H", YOG_city = TRUE)
+YOG_CITY_result_T2A <- wol.scale.up(YOG_CITY, EffFix = "L", YOG_city = TRUE, FastLoad = "YOG_CITY")
+YOG_CITY_result_T2B <- wol.scale.up(YOG_CITY, EffFix = "H", YOG_city = TRUE, FastLoad = "YOG_CITY")
 
 save(YOG_CITY_result_T2A, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_EffFixL.RData")
 save(YOG_CITY_result_T2B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_EffFixH.RData")
 
-YOG_CITY_result_T3A <- wol.scale.up(YOG_CITY, ProgCostFix = "L", YOG_city = TRUE)
-YOG_CITY_result_T3B <- wol.scale.up(YOG_CITY, ProgCostFix = "H", YOG_city = TRUE)
+YOG_CITY_result_T3A <- wol.scale.up(YOG_CITY, ProgCostFix = "L", YOG_city = TRUE, FastLoad = "YOG_CITY")
+YOG_CITY_result_T3B <- wol.scale.up(YOG_CITY, ProgCostFix = "H", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_T3A, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_ProgCostFixL.RData")
 save(YOG_CITY_result_T3B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_ProgCostFixH.RData")
 
-YOG_CITY_result_T4A <- wol.scale.up(YOG_CITY, DisCostFix = "L", YOG_city = TRUE)
-YOG_CITY_result_T4B <- wol.scale.up(YOG_CITY, DisCostFix = "H", YOG_city = TRUE)
+YOG_CITY_result_T4A <- wol.scale.up(YOG_CITY, DisCostFix = "L", YOG_city = TRUE, FastLoad = "YOG_CITY")
+YOG_CITY_result_T4B <- wol.scale.up(YOG_CITY, DisCostFix = "H", YOG_city = TRUE, FastLoad = "YOG_CITY")
 save(YOG_CITY_result_T4A, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_DisCostFixL.RData")
 save(YOG_CITY_result_T4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T_DisCostFixH.RData")
 
@@ -240,16 +240,16 @@ save(YOG_CITY_result_T4B, file = "06_Effectiveness/CE_paper_estimates/YOG_CITY_T
 
 # B) Yog SAR
 # use the fast scenario results from this one
-YOG_SAR_result <- wol.scale.up(YOG_SAR, YOG_sar = TRUE)
+YOG_SAR_result <- wol.scale.up(YOG_SAR, YOG_sar = TRUE, FastLoad = "YOG_SAR")
 save(YOG_SAR_result, file = "06_Effectiveness/CE_paper_estimates/YOG_SAR.RData")
 
 
 # C) Cities
-JAK_result <- wol.scale.up(JAK)
+JAK_result <- wol.scale.up(JAK, FastLoad = "JAK")
 save(JAK_result, file = "06_Effectiveness/CE_paper_estimates/JAK.RData")
 
 # Admin constrained areas
-JAK_result_admin <- wol.scale.up(Jakarta_city_A3, Admin_constrain = TRUE)
+JAK_result_admin <- wol.scale.up(Jakarta_city_A3, Admin_constrain = TRUE, FastLoad = "JAK")
 save(JAK_result_admin, file = "06_Effectiveness/CE_paper_estimates/JAK_Admin_constrained.RData")
 
 
@@ -260,7 +260,7 @@ save(JAK_result_admin, file = "06_Effectiveness/CE_paper_estimates/JAK_Admin_con
 #burdmapList_f = burdmapList_f[1:60]
 #burdmapList_symp = burdmapList_symp[1:60]
 
-BALI_result <- wol.scale.up(BALI)
+BALI_result <- wol.scale.up(BALI, FastLoad = "BALI")
 save(BALI_result, file = "06_Effectiveness/CE_paper_estimates/BALI.RData")
 
 

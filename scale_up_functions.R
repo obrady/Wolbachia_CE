@@ -478,10 +478,10 @@ raster.close.fix <- function(Aras){
 # Disaster = Low_coverage
 # Disaster = Low_coverage_fixed
 # Disaster = Special
-# YOG_city = FALSE ; YOG_sar = FALSE ; BurdFix = "N" ; EffFix = "N" ; ProgCostFix = "N" ; DisCostFix = "N" ; Disaster = "N" ; Admin_constrain = FALSE
+# YOG_city = FALSE ; YOG_sar = FALSE ; BurdFix = "N" ; EffFix = "N" ; ProgCostFix = "N" ; DisCostFix = "N" ; Disaster = "N" ; Admin_constrain = FALSE ; FastLoad = NA
 wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
                          BurdFix = "N", EffFix = "N", ProgCostFix = "N", DisCostFix = "N", 
-                         Disaster = "N", Admin_constrain = FALSE){
+                         Disaster = "N", Admin_constrain = FALSE, FastLoad = NA){
   ###########################################################
   ### Part 1- predicting cases, DALYs and costs saved by Wolbachia
   ###########################################################
@@ -493,11 +493,20 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   # create an index of pixels in which wolbachia will actually be deployed
   pixIND <- (!is.na(as.vector(Apop))) & (Apopv > 10)
   # burden
-  burdmapList_sm_f <- lapply(burdmapList_sm, newburd.process, FArea, Apop)
-  burdmapList_am_f <- lapply(burdmapList_am, newburd.process, FArea, Apop)
-  burdmapList_h_f <- lapply(burdmapList_h, newburd.process, FArea, Apop)
-  burdmapList_f_f <- lapply(burdmapList_f, newburd.process, FArea, Apop)
-  burdmapList_symp_f <- lapply(burdmapList_symp, newburd.process, FArea, Apop)
+  if(FastLoad %in% c("YOG_CITY", "YOG_SAR", "JAK", "BALI")){
+    load(paste0("06_Effectiveness/CE_paper_estimates/Burden_sm_", FastLoad, ".RData"))
+    load(paste0("06_Effectiveness/CE_paper_estimates/Burden_am_", FastLoad, ".RData"))
+    load(paste0("06_Effectiveness/CE_paper_estimates/Burden_h_", FastLoad, ".RData"))
+    load(paste0("06_Effectiveness/CE_paper_estimates/Burden_f_", FastLoad, ".RData"))
+    load(paste0("06_Effectiveness/CE_paper_estimates/Burden_symp_", FastLoad, ".RData"))
+  }else{
+    burdmapList_sm_f <- lapply(burdmapList_sm, newburd.process, FArea, Apop)
+    burdmapList_am_f <- lapply(burdmapList_am, newburd.process, FArea, Apop)
+    burdmapList_h_f <- lapply(burdmapList_h, newburd.process, FArea, Apop)
+    burdmapList_f_f <- lapply(burdmapList_f, newburd.process, FArea, Apop)
+    burdmapList_symp_f <- lapply(burdmapList_symp, newburd.process, FArea, Apop)
+  }
+  
   
   # and adjust if doing tornado plots
   if(BurdFix != "N"){
@@ -513,9 +522,9 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   # essentially need to match incidence values in each pixel in each raster (items of x) to a row in effmat
   # while balancing representation from the columns (different models say different things about effectiveness)
   # find relevant column repreentation
-  mod_times <- floor(length(x) / 8)
+  mod_times <- floor(length(burdmapList_symp_f) / 8)
   col_list = c(rep(50, mod_times), rep(150, mod_times), rep(250, mod_times), rep(350, mod_times),
-               rep(450, mod_times), rep(550, mod_times), rep(650, mod_times), rep(750, length(x) - 7 * mod_times))
+               rep(450, mod_times), rep(550, mod_times), rep(650, mod_times), rep(750, length(burdmapList_symp_f) - 7 * mod_times))
   # loop through rasters and calculate an effectiveness raster list
   eff_maps <- list()
   if(Disaster == "Low_coverage_fixed"){eff_maps_LC <- list()}
