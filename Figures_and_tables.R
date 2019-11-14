@@ -792,6 +792,15 @@ benefits_A2 = BCR_A2* costs_A2
 benefits_A1 = BCR_A1 * costs_A1
 benefits_A1B = BCR_A1B * costs_A1B
 
+#benefits = unlist(YOG_CITY_result[[2]][13:15]) * 10
+#benefits_A5 = unlist(YOG_CITY_result_A5[[2]][13:15]) * 10
+#benefits_A4 = unlist(YOG_CITY_result_A4[[2]][13:15]) * 10
+#benefits_A4B = unlist(YOG_CITY_result_A4B[[2]][13:15]) * 10
+#benefits_A3 = unlist(YOG_CITY_result_A3[[2]][13:15]) * 10
+#benefits_A2 = unlist(YOG_CITY_result_A2[[2]][13:15]) * 10
+#benefits_A1 = unlist(YOG_CITY_result_A1[[2]][13:15]) * 10
+#benefits_A1B = unlist(YOG_CITY_result_A1B[[2]][13:15]) * 10
+
 
 
 plotdf <- cbind(rbind(costs, costs_A5, costs_A4, costs_A4B, costs_A3, costs_A2, costs_A1, costs_A1B),
@@ -801,6 +810,8 @@ plotdf$Name = c("Baseline", "Innovation", "Low coverage", "Low coverage fixed", 
 
 # convert to millions
 plotdf[, 1:6] = plotdf[, 1:6] / 1000000
+
+
 
 BCR_labs <- data.frame(Names = c("BCR = 1.0", "BCR = 2.0", "BCR = 3.0"),
                        # xpos = c(2.5, 2.25, 2),
@@ -842,11 +853,11 @@ failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   geom_abline(slope = 3, intercept = 0, colour = "grey") +
   #geom_abline(slope = 0.5, intercept = 0, colour = "grey") +
   geom_text(aes(xpos, ypos, label = Names, angle = rotation), BCR_labs, colour = "grey") +
-  scale_x_continuous(limits = c(4, 13)) +
-  scale_y_continuous(limits = c(4, 13)) +
+  scale_x_continuous(limits = c(0, 10)) +
+  scale_y_continuous(limits = c(0, 15)) +
   xlab("Cost (millions USD)") +
   ylab("Benefit (millions USD)") +
-  geom_text(aes(label=Name), hjust=c(0.45, 1, 0, 1, 1, 0.1, 0, -0.1), vjust=c(-2, 1, 2, 2, 1, -1, 2, 1)) +
+  geom_text(aes(label=Name), hjust=c(0.45, 1, 1, 1, 1, 0.1, 0, -0.1), vjust=c(-2, -1, , 2, 1, -1, 2, 1)) +
   #geom_segment(aes(x = cost_baseline, y = bene_baseline,
   #                 xend = cost_end_t, yend = bene_end_t),
   #             data = arrows.df,

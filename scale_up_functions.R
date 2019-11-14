@@ -803,11 +803,20 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
     h3$costs[4:13] <- benefit.discounter(DALY_averted[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 4, Disaster)
     h4$costs[4:13] <- benefit.discounter(DALY_averted[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 4, Disaster)
   }
-  DALY_averted_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(DALY_averted[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3)
-  Aver_costs_direct_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_direct[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3)
-  Aver_costs_INdirect_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3)
-  Aver_costs_INdirect_fatal_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect_fatal[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3)
   
+  
+  if(Disaster == "Low_coverage_fixed"){
+    DALY_averted_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(DALY_averted[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster, yearVal_LC = DALY_averted_LC[pixIND, ][eligiblePix$roundnum == 1, ])
+    Aver_costs_direct_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_direct[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster, yearVal_LC = DALY_averted_LC[pixIND, ][eligiblePix$roundnum == 1, ])
+    Aver_costs_INdirect_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster, yearVal_LC = DALY_averted_LC[pixIND, ][eligiblePix$roundnum == 1, ])
+    Aver_costs_INdirect_fatal_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect_fatal[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster, yearVal_LC = DALY_averted_LC[pixIND, ][eligiblePix$roundnum == 1, ])
+  }else{
+    DALY_averted_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(DALY_averted[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster)
+    Aver_costs_direct_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_direct[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster)
+    Aver_costs_INdirect_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster)
+    Aver_costs_INdirect_fatal_slow_discounted[eligiblePix$roundnum == 1, ] <- benefit.discounter(Aver_costs_INdirect_fatal[pixIND, ][eligiblePix$roundnum == 1, ], startyear = 3, Disaster)
+    
+  }
   
   
   # now work out costs and benefits separately for each sequential area

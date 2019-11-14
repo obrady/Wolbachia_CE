@@ -146,13 +146,15 @@ JAK = ad1[ad1$NAME == "DKI JAKARTA", ]
 BALI = ad1[ad1$NAME == "BALI", ]
 
 # Admin 3 files for Jakarta (and Yogya for testing)
-Ad3 <- readOGR("02_Mapping/Administrative_units/Admin3/DesaIndonesia.shp", "DesaIndonesia")
+#Ad3 <- readOGR("02_Mapping/Administrative_units/Admin3/DesaIndonesia.shp", "DesaIndonesia")
+
+Ad3 <- readRDS("02_Mapping/Administrative_units/Admin3/gadm36_IDN_3_sf.rds")
 #yogya_city_A3 <- Ad3[Ad3$PROPINSI == "DI. Yogyakarta", ]
 #yogya_city_A3 <- yogya_city_A3[yogya_city_A3$KABUPATEN == "Kdy. Yogyakarta", ]
 
-Jakarta_city_A3 <- Ad3[Ad3$PROPINSI == "DKI Jakarta", ]
+Jakarta_city_A3 <- Ad3[Ad3$NAME_1 == "Jakarta Raya", ]
 # exclude thousand islands
-Jakarta_city_A3 = Jakarta_city_A3[Jakarta_city_A3$KECAMATAN != "Pulau Seribu", ]
+Jakarta_city_A3 = Jakarta_city_A3[Jakarta_city_A3$NAME_2 != "Kepulauan Seribu", ]
 rm(ad1, ad2, Ad3)
 
 
