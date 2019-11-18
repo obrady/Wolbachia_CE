@@ -1,9 +1,9 @@
 # Estimating cost functions of deployment
 rm(list = ls())
 
-# setwd("/Users/eideobra/Dropbox/Indonesia")
+setwd("/Users/eideobra/Dropbox/07_Indonesia")
 # setwd("C:\\Users\\Eideehen\\Dropbox\\Indonesia")
-setwd("~/Dropbox/LSHTM/Indonesia/")
+#setwd("~/Dropbox/LSHTM/Indonesia/")
 
 # load site summary data
 #cdat <- read.csv("05_Costs/Site_summary_costs.csv")
@@ -14,12 +14,18 @@ cdat <- cdat[!is.na(cdat$Cost_per_km2), ]
 # confounder = phase of programme
 # confounder = type of release, egg or adult
 
+# alternative response variable (cost per person)
+cdat$people = cdat$Area * cdat$Pop_density
+cdat$Cost_per_person = cdat$Cost_USD / cdat$people
+
 
 plot(cdat$Pop_density, cdat$Cost_per_km2)
 plot(log(cdat$Pop_density), log(cdat$Cost_per_km2))
-# log both pop density and cost per km2
+plot(log(cdat$Pop_density), log(cdat$Cost_per_person))
+# log both pop density and cost per km2 and cost per person
 cdat$Pop_density = log(cdat$Pop_density, 10)
 cdat$Cost_per_km2 = log(cdat$Cost_per_km2, 10)
+cdat$Cost_per_person = log(cdat$Cost_per_person, 10)
 
 
 
@@ -30,6 +36,9 @@ cdat$Cost_per_km2 = log(cdat$Cost_per_km2, 10)
 glmmod <- glm(Cost_per_km2 ~ Pop_density + Programme.phase + Type_release + GDP, 
               data = cdat, weights = Area)
 
+glmmod_alternative <- glm(Cost_per_person ~ Pop_density + Programme.phase + Type_release + GDP, 
+                          data = cdat, weights = people)
+
 #cdat$Cost_per_km2 = log(cdat$Cost_per_km2)
 #cdat$Pop_density = log(cdat$Pop_density)
 
@@ -37,6 +46,7 @@ glmmod <- glm(Cost_per_km2 ~ Pop_density + Programme.phase + Type_release + GDP,
 #              data = cdat)
 
 summary(glmmod)
+summary(glmmod_alternative)
 
 #plot(cdat$Cost_per_km2, predict(glmmod))
 #plot(glmmod)
@@ -98,6 +108,74 @@ legend("topleft", c("Phase 1 and 2", expression(italic("Phase 2"))), col = c(rgb
        pch = 16, cex = 1.2)
 
 dev.off()
+
+
+
+
+
+#########################################
+# potential new figure 1B- cost per person
+#########################################
+
+
+# back to normal scale
+
+cdat$Pop_density = 10^cdat$Pop_density
+cdat$Cost_per_person = 10^cdat$Cost_per_person
+
+
+pdf(file = "13_Writeup/CE_paper/Figures/F1_Cost_model_plot_CPP.pdf", height = 5, width = 8)
+
+par( mar = c(5.1, 4.8, 4.1, 2.1))
+plot(cdat$Pop_density, cdat$Cost_per_person,
+     col = c(rgb(0,0,0,0.5), rgb(1,0,0,0.5))[cdat$Programme.phase],
+     cex = 5 * (cdat$Area / max(cdat$Area)),
+     xlab = expression(paste("Human population density in release area (thousands inhabitants per"~km^2,")")),
+     ylab = expression(paste(italic("Wolbachia")," release cost per person (thousands of USD)")),
+     pch = 16)
+grid()
+text(4.074048, 4.778645, pos=4, label=expression(italic("Indonesia")), col = rgb(1,0,0,0.85))
+text(4.001847, 5.288611, pos=2, label=expression(paste("Colombia")^b), col = rgb(0,0,0,0.85))
+text(3.918415, 4.621179, pos=1, label=expression(paste(italic("Colombia"))^a), col = rgb(1,0,0,0.85))
+text(4.103060, 4.625335, pos=4, label=expression(paste(italic("Colombia"))^c), col = rgb(1,0,0,0.85))
+
+text(4.432571, 5.044466, pos=2, label=expression(paste("Sri Lanka")^a), col = rgb(0,0,0,0.85))
+text(3.813114, 4.763716, pos=3, label=expression(paste(italic("Sri Lanka"))^c), col = rgb(1,0,0,0.85))
+text(3.914742, 4.767179, pos=1, label=expression(paste(italic("Sri Lanka"))^b), col = rgb(1,0,0,0.85))
+text(3.384681, 4.733796, pos=4, label=expression(paste("Australia")^a), col = rgb(0,0,0,0.85))
+text(3.363880, 4.433216, pos=1, label=expression(paste(italic("Australia"))^b), col = rgb(1,0,0,0.85))
+text(3.120687, 4.243814, pos=4, label=expression(paste(italic("Australia"))^c), col = rgb(1,0,0,0.85))
+text(3.541006, 4.446590, pos=3, label=expression(paste(italic("Australia"))^d), col = rgb(1,0,0,0.85))
+text(3.124939, 4.274880, pos=3, label="Vanuatu", col = rgb(0,0,0,0.85))
+
+pred1 <- predict(glmmod, newdata = data.frame(Pop_density = log(c(10^3, 10^5), 10),
+                                                          Programme.phase = c(1, 1),
+                                                          Type_release = "EGGS",
+                                                          GDP = 12378),
+                 se.fit = T)
+lines(c(10^3,10^5), 10^pred1$fit / c(10^3, 10^5), col = rgb(0,0,0,0.5), lwd = 2)
+lines(c(10^3,10^5), 10^(pred1$fit- 1 * pred1$se.fit) / c(10^3, 10^5), col = rgb(0,0,0,0.5), lty= 2)
+lines(c(10^3,10^5), 10^(pred1$fit+ 1 * pred1$se.fit) / c(10^3, 10^5), col = rgb(0,0,0,0.5), lty= 2)
+
+pred2 <- predict(glmmod, newdata = data.frame(Pop_density = log(c(10^3, 10^5), 10),
+                                              Programme.phase = c(2, 2),
+                                              Type_release = "EGGS",
+                                              GDP = 12378),
+                 se.fit = T)
+
+lines(c(10^3,10^5), 10^pred2$fit / c(10^3, 10^5), col = rgb(1,0,0,0.5), lwd = 2)
+lines(c(10^3,10^5), 10^(pred2$fit- 1 * pred2$se.fit) / c(10^3, 10^5), col = rgb(1,0,0,0.5), lty = 2)
+lines(c(10^3,10^5), 10^(pred2$fit+ 1 * pred2$se.fit) / c(10^3, 10^5), col = rgb(1,0,0,0.5), lty = 2)
+
+legend("topright", c("Phase 1 and 2", expression(italic("Phase 2"))), col = c(rgb(0,0,0,0.7), rgb(1,0,0,0.7)),
+       text.col = c(rgb(0,0,0,0.7), rgb(1,0,0,0.7)),
+       pch = 16, cex = 1.2)
+
+dev.off()
+
+
+
+
 
 
 
