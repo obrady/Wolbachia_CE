@@ -984,7 +984,6 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   table4$Direct_f_slow_low <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
   table4$Direct_f_slow_high <- quantile((Aver_costs_direct_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
   
-  
   # societal (excluding fatal)
   table4$INdirect_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, na.rm = T)
   table4$INdirect_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
@@ -994,6 +993,24 @@ wol.scale.up <- function(FArea, YOG_city = FALSE, YOG_sar = FALSE,
   table4$INdirect_f_slow_median <- median((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, na.rm = T)
   table4$INdirect_f_slow_low <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.025, na.rm = T)
   table4$INdirect_f_slow_high <- quantile((Aver_costs_direct_slow_discounted + Aver_costs_INdirect_slow_discounted + Aver_costs_INdirect_fatal_slow_discounted) / T_cost_slow, probs = 0.975, na.rm = T)
+  
+  ###
+  # NEW- add fast programme CBRs for use in the disaster scenario analysis
+  ###
+  # medical
+  table4$Direct_fast_median <- median((Aver_costs_direct_fast_discounted) / T_cost_fast, na.rm = T)
+  table4$Direct_f_fast_low <- quantile((Aver_costs_direct_fast_discounted) / T_cost_fast, probs = 0.025, na.rm = T)
+  table4$Direct_f_fast_high <- quantile((Aver_costs_direct_fast_discounted) / T_cost_fast, probs = 0.975, na.rm = T)
+  
+  # societal (excluding fatal)
+  table4$INdirect_fast_median <- median((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted) / T_cost_fast, na.rm = T)
+  table4$INdirect_fast_low <- quantile((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted) / T_cost_fast, probs = 0.025, na.rm = T)
+  table4$INdirect_fast_high <- quantile((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted) / T_cost_fast, probs = 0.975, na.rm = T)
+  
+  # soceital (including fatal)
+  table4$INdirect_f_fast_median <- median((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted + Aver_costs_INdirect_fatal_fast_discounted) / T_cost_fast, na.rm = T)
+  table4$INdirect_f_fast_low <- quantile((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted + Aver_costs_INdirect_fatal_fast_discounted) / T_cost_fast, probs = 0.025, na.rm = T)
+  table4$INdirect_f_fast_high <- quantile((Aver_costs_direct_fast_discounted + Aver_costs_INdirect_fast_discounted + Aver_costs_INdirect_fatal_fast_discounted) / T_cost_fast, probs = 0.975, na.rm = T)
   
   table4 = data.frame(table4)
   

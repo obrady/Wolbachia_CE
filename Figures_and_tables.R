@@ -295,10 +295,10 @@ load("06_Effectiveness/CE_paper_estimates/BALI.RData")
 
 
 # to GGplot long format
-ggdat <- matrix(c(YOG_CITY_result[[4]],
-                  YOG_SAR_result[[4]],
-                  JAK_result[[4]],
-                  BALI_result[[4]]),
+ggdat <- matrix(c(YOG_CITY_result[[4]][grepl("slow", colnames(YOG_CITY_result[[4]]))],
+                  YOG_SAR_result[[4]][grepl("slow", colnames(YOG_CITY_result[[4]]))],
+                  JAK_result[[4]][grepl("slow", colnames(YOG_CITY_result[[4]]))],
+                  BALI_result[[4]][grepl("slow", colnames(YOG_CITY_result[[4]]))]),
                 ncol = 3, byrow = T)
 
 
@@ -763,14 +763,18 @@ load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance.RData")
 load("06_Effectiveness/CE_paper_estimates/YOG_CITY_D_Resistance_fixed.RData")
 
 # Benefits / costs
-BCR = colSums(matrix(unlist(YOG_CITY_result[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A5 = colSums(matrix(unlist(YOG_CITY_result_A5[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A5[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A4 = colSums(matrix(unlist(YOG_CITY_result_A4[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A4B = colSums(matrix(unlist(YOG_CITY_result_A4B[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A4B[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A3 = colSums(matrix(unlist(YOG_CITY_result_A3[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A3[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A2 = colSums(matrix(unlist(YOG_CITY_result_A2[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A2[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A1 = colSums(matrix(unlist(YOG_CITY_result_A1[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1[[4]]), ncol = 3, byrow = T)[2, ]
-BCR_A1B = colSums(matrix(unlist(YOG_CITY_result_A1B[[4]]), ncol = 3, byrow = T)) - matrix(unlist(YOG_CITY_result_A1B[[4]]), ncol = 3, byrow = T)[2, ]
+# only interested in the fast programme for this plot
+#BCR_col_index = grepl("fast", colnames(YOG_CITY_result[[4]])) & grepl("Direct", colnames(YOG_CITY_result[[4]]))
+BCR_col_index = grepl("fast", colnames(YOG_CITY_result[[4]]))
+
+BCR = rowSums(matrix(unlist(YOG_CITY_result[[4]][BCR_col_index]), ncol = 3))
+BCR_A5 = rowSums(matrix(unlist(YOG_CITY_result_A5[[4]][BCR_col_index]), ncol = 3))
+BCR_A4 = rowSums(matrix(unlist(YOG_CITY_result_A4[[4]][BCR_col_index]), ncol = 3))
+BCR_A4B = rowSums(matrix(unlist(YOG_CITY_result_A4B[[4]][BCR_col_index]), ncol = 3))
+BCR_A3 = rowSums(matrix(unlist(YOG_CITY_result_A3[[4]][BCR_col_index]), ncol = 3))
+BCR_A2 = rowSums(matrix(unlist(YOG_CITY_result_A2[[4]][BCR_col_index]), ncol = 3))
+BCR_A1 = rowSums(matrix(unlist(YOG_CITY_result_A1[[4]][BCR_col_index]), ncol = 3))
+BCR_A1B = rowSums(matrix(unlist(YOG_CITY_result_A1B[[4]][BCR_col_index]), ncol = 3))
 
 # costs
 costs = YOG_CITY_result[[1]][c("TotalCost_Slow_median", "TotalCost_Slow_low", "TotalCost_Slow_high")]
@@ -792,15 +796,10 @@ benefits_A2 = BCR_A2* costs_A2
 benefits_A1 = BCR_A1 * costs_A1
 benefits_A1B = BCR_A1B * costs_A1B
 
-#benefits = unlist(YOG_CITY_result[[2]][13:15]) * 10
-#benefits_A5 = unlist(YOG_CITY_result_A5[[2]][13:15]) * 10
-#benefits_A4 = unlist(YOG_CITY_result_A4[[2]][13:15]) * 10
-#benefits_A4B = unlist(YOG_CITY_result_A4B[[2]][13:15]) * 10
-#benefits_A3 = unlist(YOG_CITY_result_A3[[2]][13:15]) * 10
-#benefits_A2 = unlist(YOG_CITY_result_A2[[2]][13:15]) * 10
-#benefits_A1 = unlist(YOG_CITY_result_A1[[2]][13:15]) * 10
-#benefits_A1B = unlist(YOG_CITY_result_A1B[[2]][13:15]) * 10
-
+# !!!warning
+# !!!!!! a hack for now as i can't work out why it isn't calculating beenfits properly for the innovation scenarios
+benefits_A5 = benefits
+benefits_A3 = benefits
 
 
 plotdf <- cbind(rbind(costs, costs_A5, costs_A4, costs_A4B, costs_A3, costs_A2, costs_A1, costs_A1B),
@@ -813,14 +812,14 @@ plotdf[, 1:6] = plotdf[, 1:6] / 1000000
 
 
 
-BCR_labs <- data.frame(Names = c("BCR = 1.0", "BCR = 2.0", "BCR = 3.0"),
+BCR_labs <- data.frame(Names = c("BCR = 1.0", "BCR = 2.0", "BCR = 3.0", "BCR = 4.0", "BCR = 5.0"),
                        # xpos = c(2.5, 2.25, 2),
                        # ypos = c(3.5, 5.5, 7.5),
                        # rotation = c(22.5, 42.5, 55),
-                       xpos = c(2, 2, 2),
-                       ypos = c(2.5, 4.5, 6.75),
-                       rotation = c(22.5, 40, 52.5),
-                       col = c("grey", "grey", "grey"))
+                       xpos = c(2, 2, 2, 2, 2),
+                       ypos = c(2.5, 2.5 + 1 * 2.125,  2.5 + 2 * 2.125, 2.5 + 3 * 2.125, 2.5 + 4 * 2.125),
+                       rotation = c(22.5, 40, 52.5, 60, 65),
+                       col = c("grey", "grey", "grey", "grey", "grey"))
 
 prop.space <- .9
 space.fixed <- .15
@@ -843,21 +842,31 @@ arrows.df <- data.frame(
 )
 
 
+# BCR lines
+
+
 failure <- ggplot(plotdf, aes(x = Cost, y = Bene))+
   geom_point(size = c(6, rep(4, 7)), colour = c("black", "dark green", "dark red", "orange", "dark green", "orange", "dark red", "orange")) +
   #geom_point(size = 4, colour = "black") +
   #geom_errorbarh(aes(xmin = Cost_low, xmax = Cost_high)) +
   #geom_errorbar(aes(ymin = Bene_low, ymax = Bene_high)) +
   geom_abline(slope = 1, intercept = 0, colour = "grey") +
+  #geom_abline(slope = 1.5, intercept = 0, colour = "grey", lty = 2, lwd = 0.5) +
   geom_abline(slope = 2, intercept = 0, colour = "grey") +
+  #geom_abline(slope = 2.5, intercept = 0, colour = "grey", lty = 2, lwd = 0.5) +
   geom_abline(slope = 3, intercept = 0, colour = "grey") +
+  #geom_abline(slope = 3.5, intercept = 0, colour = "grey", lty = 2, lwd = 0.5) +
+  geom_abline(slope = 4, intercept = 0, colour = "grey") +
+  #geom_abline(slope = 4.5, intercept = 0, colour = "grey", lty = 2, lwd = 0.5) +
+  geom_abline(slope = 5, intercept = 0, colour = "grey") +
   #geom_abline(slope = 0.5, intercept = 0, colour = "grey") +
+  geom_point(aes(x = Cost, y = Bene), size = c(6, rep(4, 7)), colour = c("black", "dark green", "dark red", "orange", "dark green", "orange", "dark red", "orange")) +
   geom_text(aes(xpos, ypos, label = Names, angle = rotation), BCR_labs, colour = "grey") +
-  scale_x_continuous(limits = c(0, 10)) +
-  scale_y_continuous(limits = c(0, 15)) +
+  scale_x_continuous(expand = c(0,0), limits = c(0, 10)) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 20)) +
   xlab("Cost (millions USD)") +
   ylab("Benefit (millions USD)") +
-  geom_text(aes(label=Name), hjust=c(0.45, 1, 1, 1, 1, 0.1, 0, -0.1), vjust=c(-2, -1, , 2, 1, -1, 2, 1)) +
+  #geom_text(aes(label=Name), hjust=c(1.1, 1.1, 0, -0.1, 1.1, 0, 0, 0), vjust=c(2.5, -1.25, -1.25, 0, -1.25, -1.25, -1.25, -1.25)) +
   #geom_segment(aes(x = cost_baseline, y = bene_baseline,
   #                 xend = cost_end_t, yend = bene_end_t),
   #             data = arrows.df,
@@ -870,8 +879,8 @@ failure
 
 
 
-# ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, width = 7, height = 5)
-ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure_with_arrows.pdf", failure, width = 7, height = 5)
+ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure.pdf", failure, width = 7, height = 5)
+#ggsave(filename = "13_Writeup/CE_paper/Figures/Failure_figure_with_arrows.pdf", failure, width = 7, height = 5)
 
 
 
