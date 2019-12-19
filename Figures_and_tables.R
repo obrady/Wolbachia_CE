@@ -483,7 +483,7 @@ p1 <-
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
   tm_text("Name", size = 1, ymod = -1, xmod = c(0, 0, -1.5)) +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  tm_scale_bar(position = c("left", "bottom"))
 
 p1 
 
@@ -530,7 +530,7 @@ p2 <-
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
   tm_text("Name", size = 1, ymod = -1, xmod = -1) +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  tm_scale_bar(position = c("left", "bottom"))
   #tm_layout(bg.color = "light blue")
 p2
 
@@ -577,7 +577,7 @@ p3 <-
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
   tm_text("Name", size = 1, ymod = c(-1, 1, 1), xmod = c(-0.75, 0, 1)) +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  tm_scale_bar(position = c("left", "bottom"))
   #tm_shape(Kalideres) +
   #tm_borders(col = "red")
   #tm_layout(bg.color = "light blue")
@@ -622,7 +622,7 @@ p4 <-
   tm_shape(POI) +
   tm_dots(size = 0.5, alpha = 1, shape = 1) +
   tm_text("Name", size = 1, ymod = c(-1, -1.5, 1), xmod = c(-5, 3, -3)) +
-  tm_scale_bar(position = c("left", "bottom"), text.size = 0.75)
+  tm_scale_bar(position = c("left", "bottom"))
   #tm_layout(bg.color = "light blue")
 p4
 
